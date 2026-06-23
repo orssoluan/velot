@@ -103,6 +103,11 @@
             <span class="w-5 h-5 rounded-md bg-[#a855f7] border-2 border-purple-200 shadow-sm block group-hover:scale-110 transition-transform"></span>
             <span class="text-sm text-slate-700 font-medium group-hover:text-purple-600 transition-colors">Velot Ponta Grossa</span>
         </div>
+
+        <div onclick="openModal('pink')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#ec4899] border-2 border-pink-200 shadow-sm block group-hover:scale-110 transition-transform"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-pink-600 transition-colors">Velot Maringá</span>
+        </div>
     </div>
 
     <!-- Modal de Lista de Cidades -->
@@ -162,8 +167,8 @@
         
         // Cidades que devem receber cor de destaque (AGORA VERMELHO)
         const highlightCities = [
-            // Paraná (Removido londrina para ir ao grupo amarelo)
-            "umuarama", "maringa", "telemacoborba", 
+            // Paraná (Removido maringa para ir ao grupo rosa)
+            "umuarama", "telemacoborba", 
             "paranavai", "curitiba", "arapoti", "araucaria", "cascavel", 
             "cianorte", "fazendariogrande", "rolandia", "campomourao", "apucarana", 
             "toledo", "ibipora",
@@ -218,6 +223,17 @@
             "londrina", "cambe", "arapongas", "sertanopolis", "belavistadoparaiso"
         ];
 
+        // Cidades que devem ser pintadas de Rosa (Velot Maringá)
+        const pinkCities = [
+            "aguaboa", "altoparana", "angulo", "aquidaban", "araruna", "astorga", "atalaia",
+            "boaesperanca", "bomsucesso", "campinadalagoa", "floresta", "goioere", "ipora",
+            "iretama", "itambe", "ivaipora", "jussara", "kalore", "mandaguacu", "mandaguari",
+            "mariahelena", "marialva", "maringa", "novaesperanca", "novalondrina", "ourizona",
+            "paicandu", "paraisodonorte", "paranacity", "portorico", "portosaojose",
+            "presidentecastelobranco", "quintadosol", "rondon", "santafe", "saojoaodoivai",
+            "saojorgedoivai", "saopedrodoivai", "sarandi", "tapejara", "terraroxa"
+        ];
+
         
         // Função crucial que remove acentos, espaços e maiúsculas para podermos bater as strings com precisão 
         // Ex: "Herval D'oeste" -> "hervaldoeste", "São Leopoldo" -> "saoleopoldo"
@@ -261,6 +277,10 @@
                             
                             // Exceção para não pintar a cidade homônima de Catanduvas no Paraná
                             const isCatanduvasPR = (normName === "catanduvas" && isPR);
+                            
+                            // Exceções para homônimos do PR que existem no RS
+                            const isSarandiRS = (normName === "sarandi" && !isPR);
+                            const isTapejaraRS = (normName === "tapejara" && !isPR);
                             
                             if (highlightCities.includes(normName)) {
                                 // ALTERAÇÃO AQUI: Mudança da cor de preenchimento para vermelho (#ef4444)
@@ -311,6 +331,14 @@
                                     opacity: 1,
                                     fillOpacity: 0.85
                                 };
+                            } else if (pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
+                                return {
+                                    fillColor: '#ec4899',  // Rosa
+                                    weight: 1.5,
+                                    color: '#ffffff',
+                                    opacity: 1,
+                                    fillOpacity: 0.85
+                                };
                             } else {
                                 return {
                                     fillColor: '#cbd5e1',  // Cinza Claro
@@ -334,40 +362,38 @@
                             const isPalmeiraSC = (normName === "palmeira" && isSC);
                             const isCatanduvasPR = (normName === "catanduvas" && isPR);
                             
+                            const isSarandiRS = (normName === "sarandi" && !isPR);
+                            const isTapejaraRS = (normName === "tapejara" && !isPR);
+                            
                             let status = "<span class='text-slate-400 font-medium'>Município do Sul</span>";
-                            let icon = "📍";
                             
                             // Se for da lista, adicionamos hover e interações especiais
                             if(highlightCities.includes(normName)) {
                                 // ALTERAÇÃO AQUI: Mudança das classes Tailwind de orange para red no popup
                                 status = "<span class='text-red-600 font-bold bg-red-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Revendas sem anúncios V4</span>";
-                                icon = "🔥";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(orangeCities.includes(normName) && !isPalmeiraSC) {
                                 status = "<span class='text-orange-600 font-bold bg-orange-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Campo Largo</span>";
-                                icon = "🟠";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(yellowCities.includes(normName)) {
                                 status = "<span class='text-yellow-600 font-bold bg-yellow-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Londrina</span>";
-                                icon = "🟡";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(blueCities.includes(normName)) {
                                 status = "<span class='text-blue-600 font-bold bg-blue-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Sapucaia do Sul</span>";
-                                icon = "🔵";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(greenCities.includes(normName) && !isCatanduvasPR) {
                                 status = "<span class='text-green-600 font-bold bg-green-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Joaçaba</span>";
-                                icon = "✅";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(lilacCities.includes(normName)) {
                                 status = "<span class='text-purple-600 font-bold bg-purple-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Ponta Grossa</span>";
-                                icon = "🟣";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
+                                status = "<span class='text-pink-600 font-bold bg-pink-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Maringá</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             }
                             
                             const popupContent = `
                                 <div class="text-center p-2 flex flex-col items-center gap-1">
-                                    <div class="text-2xl mb-1">${icon}</div>
                                     <h3 class="font-black text-slate-800 text-lg leading-tight m-0 p-0">${rawName}</h3>
                                     <div class="mt-2">${status}</div>
                                 </div>
@@ -451,6 +477,18 @@
                 title: "Velot Ponta Grossa",
                 cities: [
                     "Ponta Grossa", "Castro", "Imbituva", "Ipiranga", "Carambeí", "Abapã", "Ivaí", "Tibagi", "Prudentópolis"
+                ].sort()
+            },
+            pink: {
+                title: "Velot Maringá",
+                cities: [
+                    "Água Boa", "Alto Paraná", "Ângulo", "Aquidaban", "Araruna", "Astorga", "Atalaia",
+                    "Boa Esperança", "Bom Sucesso", "Campina da Lagoa", "Floresta", "Goioerê", "Iporã",
+                    "Iretama", "Itambé", "Ivaiporã", "Jussara", "Kaloré", "Mandaguaçu", "Mandaguari",
+                    "Maria Helena", "Marialva", "Maringá", "Nova Esperança", "Nova Londrina", "Ourizona",
+                    "Paiçandu", "Paraíso do Norte", "Paranacity", "Porto Rico", "Porto São José",
+                    "Presidente Castelo Branco", "Quinta do Sol", "Rondon", "Santa Fé", "São João do Ivaí",
+                    "São Jorge do Ivaí", "São Pedro do Ivaí", "Sarandi", "Tapejara", "Terra Roxa"
                 ].sort()
             }
         };
