@@ -22,7 +22,7 @@
             overflow: hidden;
         }
         #map { 
-            height: calc(100vh - 64px); /* Ajustado para dar espaço ao novo cabeçalho (64px) */
+            height: calc(100vh - 64px);
             width: 100%; 
             z-index: 1; 
             background-color: #f8fafc;
@@ -40,7 +40,30 @@
         .custom-popup .leaflet-popup-tip {
             background: white;
         }
+        /* Barra de rolagem customizada para a legenda caso a tela seja pequena */
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+
+        /* Estilização e Animação do PIN da Cidade Sede (Estrela) */
+        .hq-pin {
+            background: transparent;
+            border: none;
+        }
+        .hq-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce-subtle 2s infinite ease-in-out;
+        }
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
     </style>
+
+    <!-- Importando SheetJS para exportar um arquivo XLSX real sem erros no Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="relative bg-slate-50 flex flex-col h-screen overflow-hidden">
     
@@ -65,48 +88,99 @@
     </div>
 
     <!-- Caixa de Legenda -->
-    <div class="absolute bottom-8 left-8 z-[1000] bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-gray-100 pointer-events-auto shadow-slate-200/50">
+    <div class="absolute bottom-6 md:bottom-8 left-6 md:left-8 z-[1000] bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-gray-100 pointer-events-auto shadow-slate-200/50 max-h-[80vh] overflow-y-auto custom-scrollbar w-[280px]">
         <h3 class="font-bold text-slate-800 mb-3 pb-3 border-b border-slate-100 flex flex-col gap-2.5">
             <span class="text-sm uppercase tracking-wide">Geolocalização</span>
             <div class="inline-flex items-center gap-1.5 text-[11px] text-blue-700 font-semibold normal-case tracking-normal bg-blue-50/80 px-2.5 py-1.5 rounded-lg border border-blue-200 shadow-sm animate-pulse w-fit">
                 <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
-                Clique no item para abrir a lista de cidades
+                Clique para ver as cidades
             </div>
         </h3>
         
-        <div onclick="openModal('red')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
-            <span class="w-5 h-5 rounded-md bg-[#ef4444] border-2 border-red-200 shadow-sm block group-hover:scale-110 transition-transform"></span>
-            <span class="text-sm text-slate-700 font-medium group-hover:text-red-600 transition-colors">Revendas sem anúncios V4</span>
-        </div>
-        
-        <div onclick="openModal('orange')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
-            <span class="w-5 h-5 rounded-md bg-[#f97316] border-2 border-orange-300 shadow-sm block group-hover:scale-110 transition-transform"></span>
-            <span class="text-sm text-slate-700 font-medium group-hover:text-orange-600 transition-colors">Velot Campo Largo</span>
-        </div>
-
+        <!-- SEÇÃO: RS -->
+        <div class="text-[10px] font-black text-slate-400 mt-2 mb-1 pl-1 uppercase tracking-wider">Rio Grande do Sul (RS)</div>
         <div onclick="openModal('blue')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
-            <span class="w-5 h-5 rounded-md bg-[#3b82f6] border-2 border-blue-200 shadow-sm block group-hover:scale-110 transition-transform"></span>
-            <span class="text-sm text-slate-700 font-medium group-hover:text-blue-600 transition-colors">Velot Sapucaia do Sul</span>
+            <span class="w-5 h-5 rounded-md bg-[#3b82f6] border-2 border-blue-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-blue-600 transition-colors truncate">Velot Sapucaia do Sul</span>
         </div>
 
+        <!-- SEÇÃO: SC -->
+        <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Santa Catarina (SC)</div>
         <div onclick="openModal('green')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
-            <span class="w-5 h-5 rounded-md bg-[#22c55e] border-2 border-green-200 shadow-sm block group-hover:scale-110 transition-transform"></span>
-            <span class="text-sm text-slate-700 font-medium group-hover:text-green-600 transition-colors">Velot Joaçaba</span>
+            <span class="w-5 h-5 rounded-md bg-[#22c55e] border-2 border-green-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-green-600 transition-colors truncate">Velot Joaçaba</span>
         </div>
-        
+
+        <!-- SEÇÃO: PR -->
+        <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Paraná (PR)</div>
+        <div onclick="openModal('orange')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#f97316] border-2 border-orange-300 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-orange-600 transition-colors truncate">Velot Campo Largo</span>
+        </div>
         <div onclick="openModal('yellow')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
-            <span class="w-5 h-5 rounded-md bg-[#eab308] border-2 border-yellow-200 shadow-sm block group-hover:scale-110 transition-transform"></span>
-            <span class="text-sm text-slate-700 font-medium group-hover:text-yellow-600 transition-colors">Velot Londrina</span>
+            <span class="w-5 h-5 rounded-md bg-[#eab308] border-2 border-yellow-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-yellow-600 transition-colors truncate">Velot Londrina</span>
         </div>
-
-        <div onclick="openModal('purple')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
-            <span class="w-5 h-5 rounded-md bg-[#a855f7] border-2 border-purple-200 shadow-sm block group-hover:scale-110 transition-transform"></span>
-            <span class="text-sm text-slate-700 font-medium group-hover:text-purple-600 transition-colors">Velot Ponta Grossa</span>
-        </div>
-
         <div onclick="openModal('pink')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
-            <span class="w-5 h-5 rounded-md bg-[#ec4899] border-2 border-pink-200 shadow-sm block group-hover:scale-110 transition-transform"></span>
-            <span class="text-sm text-slate-700 font-medium group-hover:text-pink-600 transition-colors">Velot Maringá</span>
+            <span class="w-5 h-5 rounded-md bg-[#ec4899] border-2 border-pink-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-pink-600 transition-colors truncate">Velot Maringá</span>
+        </div>
+        <div onclick="openModal('purple')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#a855f7] border-2 border-purple-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-purple-600 transition-colors truncate">Velot Ponta Grossa</span>
+        </div>
+        <div onclick="openModal('sky')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#0ea5e9] border-2 border-sky-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-sky-600 transition-colors truncate">Velot Telêmaco Borba</span>
+        </div>
+        <div onclick="openModal('rose')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#f43f5e] border-2 border-rose-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-rose-600 transition-colors truncate">Velot Paranavaí</span>
+        </div>
+        <div onclick="openModal('cyan')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#06b6d4] border-2 border-cyan-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-cyan-600 transition-colors truncate">Velot Umuarama</span>
+        </div>
+
+        <!-- SEÇÃO: SP -->
+        <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">São Paulo (SP)</div>
+        <div onclick="openModal('emerald')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#10b981] border-2 border-emerald-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-emerald-600 transition-colors truncate">Velot Campinas</span>
+        </div>
+        <div onclick="openModal('fuchsia')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#d946ef] border-2 border-fuchsia-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-fuchsia-600 transition-colors truncate">Velot Marília</span>
+        </div>
+        <div onclick="openModal('teal')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#14b8a6] border-2 border-teal-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-teal-600 transition-colors truncate">Velot Sorocaba</span>
+        </div>
+        <div onclick="openModal('amber')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#f59e0b] border-2 border-amber-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-amber-600 transition-colors truncate">Velot São José do Rio Preto</span>
+        </div>
+
+        <!-- SEÇÃO: RJ & MG -->
+        <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Rio de Janeiro & Região</div>
+        <div onclick="openModal('indigo')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#6366f1] border-2 border-indigo-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-indigo-600 transition-colors truncate">Velot Barra Mansa</span>
+        </div>
+
+        <!-- SEÇÃO: GERAL -->
+        <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Geral (Outros)</div>
+        <div onclick="openModal('red')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#ef4444] border-2 border-red-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-red-600 transition-colors truncate">Revendas s/ anúncios V4</span>
+        </div>
+
+        <!-- Botão Exportar Excel Global -->
+        <div class="mt-5 pt-4 border-t border-slate-100">
+            <button onclick="exportToExcel()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-lg shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all group">
+                <svg class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Exportar P/ Excel
+            </button>
         </div>
     </div>
 
@@ -121,7 +195,7 @@
             </div>
             <div class="p-5">
                 <p class="text-sm text-slate-500 mb-3" id="modalCount">Total: 0 cidades</p>
-                <textarea id="cityListTextarea" class="w-full h-64 p-3 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-slate-50" readonly></textarea>
+                <textarea id="cityListTextarea" class="w-full h-72 p-3 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none bg-slate-50 custom-scrollbar" readonly></textarea>
             </div>
             <div class="p-5 border-t border-slate-100 bg-slate-50 flex justify-end">
                 <button onclick="copyCityList()" id="copyBtn" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
@@ -139,8 +213,8 @@
         
         // Inicializa o mapa centralizado aproximadamente na região sul
         const map = L.map('map', {
-            zoomControl: false // Movemos o controle de zoom
-        }).setView([-27.5, -52.0], 6);
+            zoomControl: false 
+        }).setView([-23.5, -51.0], 6); // Ajustado o zoom para acomodar melhor a expansão de SP
 
         // Reposiciona o controle de zoom para não cobrir outros elementos da UI
         L.control.zoom({ position: 'topright' }).addTo(map);
@@ -165,21 +239,37 @@
         }).addTo(map);
 
         
+        // DEFINIÇÃO DAS CIDADES SEDE COM SEUS RESPECTIVOS ESTADOS (Para evitar conflitos de nomes iguais)
+        const headquarters = [
+            { name: "sapucaiadosul", state: "43" }, // RS
+            { name: "joacaba", state: "42" },       // SC
+            { name: "campolargo", state: "41" },    // PR
+            { name: "londrina", state: "41" },      // PR
+            { name: "maringa", state: "41" },       // PR
+            { name: "pontagrossa", state: "41" },   // PR
+            { name: "telemacoborba", state: "41" }, // PR
+            { name: "paranavai", state: "41" },     // PR
+            { name: "umuarama", state: "41" },      // PR
+            { name: "campinas", state: "35" },      // SP
+            { name: "marilia", state: "35" },       // SP
+            { name: "sorocaba", state: "35" },      // SP
+            { name: "saojosedoriopreto", state: "35" }, // SP
+            { name: "barramansa", state: "33" }     // RJ
+        ];
+
+
         // Cidades que devem receber cor de destaque (AGORA VERMELHO)
         const highlightCities = [
-            // Paraná (Removido maringa para ir ao grupo rosa)
-            "umuarama", "telemacoborba", 
-            "paranavai", "curitiba", "arapoti", "araucaria", "cascavel", 
-            "cianorte", "fazendariogrande", "rolandia", "campomourao", "apucarana", 
-            "toledo", "ibipora",
-            // Rio de Janeiro
-            "barramansa",
+            // Paraná 
+            "curitiba", "araucaria", 
+            "cascavel", "cianorte", "fazendariogrande", "rolandia", "campomourao", 
+            "apucarana", "toledo", "ibipora",
             // Rio Grande do Sul
             "saoleopoldo", "farroupilha", "caxiasdosul",
             // Santa Catarina
             "criciuma", "joinville", "concordia",
-            // São Paulo
-            "campinas", "marilia", "saojosedoriopreto", "sorocaba", "bragancapaulista", 
+            // São Paulo 
+            "bragancapaulista", 
             "guarulhos", "piracicaba", "jundiai", "americana", "bauru", 
             "fernandopolis", "presidenteprudente", "itapetininga", "santabarbaradooeste", 
             "doiscorregos", "leme", "saojosedoscampos", "descalvado"
@@ -187,12 +277,14 @@
 
         // Cidades que devem ser pintadas de Azul (Cidades do RS)
         const blueCities = [
-            "portoalegre", "canoas", "esteio", "sapucaiadosul", "novohamburgo",
-            "campobom", "estanciavelha", "portao", "ivoti", "doisirmaos", "novasantarita",
-            "triunfo", "eldoradodosul", "guaiba", "alvorada", "viamao", "cachoeirinha",
-            "gravatai", "glorinha", "morroreuter", "lindolfocollor", 
-            "novahartz", "ararica", "sapiranga", "parobe", "trescoroas", "montenegro", 
-            "saosebastiaodocai", "capeladesantana", "bomprincipio", "feliz"
+            "alvorada", "ararica", "cachoeirinha", "campobom", "canoas",
+            "capeladesantana", "doisirmaos", "eldoradodosul", "estanciavelha",
+            "esteio", "glorinha", "gravatai", "guaiba", "harmonia", "igrejinha",
+            "ivoti", "lindolfocollor", "montenegro", "morroreuter", "novahartz",
+            "novasantarita", "novohamburgo", "parecinovo", "parobe", "portao",
+            "portoalegre", "presidentelucena", "saojosedohortencio",
+            "saosebastiaodocai", "sapiranga", "sapucaiadosul", "taquara", "triunfo",
+            "viamao"
         ];
 
         // Cidades que devem ser pintadas de verde
@@ -208,14 +300,13 @@
         // Cidades que devem ser pintadas de Lilás
         const lilacCities = [
             "pontagrossa", "castro", "imbituva", 
-            "ipiranga", "carambei", "abapa", "ivai", "tibagi", "prudentopolis"
+            "ipiranga", "carambei", "ivai", "tibagi", "prudentopolis"
         ];
 
         // Cidades que devem ser pintadas de Laranja (Velot Campo Largo)
         const orangeCities = [
-            "campolargo", "campomagro", "balsanova", "contenda", "lapa", 
-            "saojosedospinhais", "pinhais", "colombo", "piraquara", "quatrobarras", 
-            "almirantetamandare", "riobrancodosul", "mandirituba", "portoamazonas", "palmeira"
+            "balsanova", "campolargo", "campomagro", "itaperucu", "lapa", 
+            "palmeira", "portoamazonas", "riobrancodosul", "saojoaodotriunfo"
         ];
 
         // Cidades que devem ser pintadas de Amarelo (Velot Londrina)
@@ -225,18 +316,78 @@
 
         // Cidades que devem ser pintadas de Rosa (Velot Maringá)
         const pinkCities = [
-            "aguaboa", "altoparana", "angulo", "aquidaban", "araruna", "astorga", "atalaia",
-            "boaesperanca", "bomsucesso", "campinadalagoa", "floresta", "goioere", "ipora",
-            "iretama", "itambe", "ivaipora", "jussara", "kalore", "mandaguacu", "mandaguari",
-            "mariahelena", "marialva", "maringa", "novaesperanca", "novalondrina", "ourizona",
-            "paicandu", "paraisodonorte", "paranacity", "portorico", "portosaojose",
-            "presidentecastelobranco", "quintadosol", "rondon", "santafe", "saojoaodoivai",
-            "saojorgedoivai", "saopedrodoivai", "sarandi", "tapejara", "terraroxa"
+            "bomsucesso", "doutorcamargo", "engenheirobeltrao", "fenix", "floresta", 
+            "itambe", "kalore", "mandaguacu", "marialva", "maringa", "ourizona", 
+            "paicandu", "presidentecastelobranco", "quintadosol", 
+            "saopedrodoivai", "sarandi", "terraboa"
+        ];
+
+        // Cidades que devem ser pintadas de Ciano/Azul Claro (Velot Umuarama)
+        const cyanCities = [
+            "altoparaiso", "altopiquiri", "altonia", "cafezaldosul", "cidadegaucha", 
+            "cruzeirodooeste", "douradina", "esperancanova", "franciscoalves", "icaraima", 
+            "ipora", "ivate", "mariahelena", "mariluz", "novaolimpia", "perobal", 
+            "perola", "saojorgedopatrocinio", "tapira", "umuarama", "xambre"
+        ];
+
+        // Cidades que devem ser pintadas de Verde-Azulado (Velot Sorocaba)
+        const tealCities = [
+            "aluminio", "aracoiabadaserra", "ibiuna", "ipero", "itu", "mairinque", 
+            "piedade", "portofeliz", "salto", "saltodepirapora", "saoroque", 
+            "sorocaba", "votorantim"
+        ];
+
+        // Cidades que devem ser pintadas de Índigo (Velot Barra Mansa)
+        const indigoCities = [
+            "angradosreis", "bananal", "barramansa", "barradopirai", "guapimirim", 
+            "guaratingueta", "itaguai", "lorena", "mendes", "novaiguacu", "paraty", 
+            "pinheiral", "pirai", "portoreal", "quatis", "resende", "rioclaro", 
+            "riodejaneiro", "valenca", "vassouras", "voltaredonda"
+        ];
+
+        // Cidades que devem ser pintadas de Fúcsia (Velot Marília)
+        const fuchsiaCities = [
+            "alvarodecarvalho", "alvinlandia", "assis", "bora", "cafelandia", 
+            "camposnovospaulista", "duartina", "echapora", "galia", "garca", "getulina", 
+            "guaimbe", "guaranta", "herculandia", "juliomesquita", "lins", "lupercio", 
+            "lutecia", "marilia", "ocaucu", "oriente", "oscarbressane", "pirajui", 
+            "platina", "pompeia", "queiroz", "quintana", "saopedrodoturvo", "veracruz"
+        ];
+
+        // Cidades que devem ser pintadas de Esmeralda (Velot Campinas)
+        const emeraldCities = [
+            "amparo", "campinas", "eliasfausto", "hortolandia", "indaiatuba", 
+            "jaguariuna", "montemor", "morungaba", "pedreira"
+        ];
+
+        // Cidades que devem ser pintadas de Rosa/Cereja (Velot Paranavaí)
+        const roseCities = [
+            "altoparana", "amapora", "cruzeirodosul", "diamantedonorte", 
+            "euclidesdacunhapaulista", "guairaca", "inaja", "itaunadosul", 
+            "loanda", "mirador", "novaaliancadoivai", "novaesperanca", 
+            "novalondrina", "paraisodonorte", "paranacity", "paranapoema", 
+            "paranavai", "rosana", "santoantoniodocaiua", "saocarlosdoivai", 
+            "saojoaodocaiua", "tamboara", "teodorosampaio", "terrarica"
+        ];
+
+        // Cidades que devem ser pintadas de Azul Céu (Velot Telêmaco Borba)
+        const skyCities = [
+            "arapoti", "curiuva", "figueira", "grandesrios", "ibaiti", "imbau", 
+            "ortigueira", "pinhalao", "reserva", "riobrancodoivai", "rosariodoivai", 
+            "sapopema", "telemacoborba", "ventania"
+        ];
+
+        // Cidades que devem ser pintadas de Âmbar (Velot São José do Rio Preto)
+        const amberCities = [
+            "badybassitt", "balsamo", "barretos", "bebedouro", "buritama", "cedral", 
+            "guapiacu", "ibira", "ipigua", "itapolis", "jaci", "josebonifacio", 
+            "mirassol", "mirassolandia", "nevespaulista", "nipoa", "novagranada", 
+            "olimpia", "pindorama", "potirendaba", "saojoaquimdabarra", "saojosedoriopreto", 
+            "tanabi", "ubarana", "uchoa", "uniaopaulista", "urupes", "votuporanga"
         ];
 
         
-        // Função crucial que remove acentos, espaços e maiúsculas para podermos bater as strings com precisão 
-        // Ex: "Herval D'oeste" -> "hervaldoeste", "São Leopoldo" -> "saoleopoldo"
+        // Função crucial que remove acentos, espaços e maiúsculas
         function normalize(name) {
             if (!name) return "";
             return name.toString().toLowerCase()
@@ -255,8 +406,9 @@
         ];
 
         const allLayersGroup = L.featureGroup();
+        const headquarterLayers = []; // Array para guardar os polígonos das sedes
 
-        // Carrega os 3 estados simultaneamente
+        // Carrega os 5 estados simultaneamente
         Promise.all(geojsonUrls.map(url => fetch(url).then(res => res.json())))
             .then(dataArray => {
                 dataArray.forEach(geojsonData => {
@@ -267,109 +419,83 @@
                             const rawName = feature.properties.name || feature.properties.description || "";
                             const normName = normalize(rawName);
                             
-                            // Extraindo o código do estado a partir do ID do IBGE (2 primeiros dígitos. SC = 42)
+                            // Extraindo o código do estado a partir do ID do IBGE (2 primeiros dígitos)
                             const ibgeCode = feature.id || (feature.properties && feature.properties.id) || "";
                             const isSC = String(ibgeCode).startsWith("42");
                             const isPR = String(ibgeCode).startsWith("41");
+                            const isSP = String(ibgeCode).startsWith("35");
                             
-                            // Exceção para não pintar a cidade homônima de Palmeira em Santa Catarina
+                            // Exceções e filtros precisos
                             const isPalmeiraSC = (normName === "palmeira" && isSC);
-                            
-                            // Exceção para não pintar a cidade homônima de Catanduvas no Paraná
                             const isCatanduvasPR = (normName === "catanduvas" && isPR);
-                            
-                            // Exceções para homônimos do PR que existem no RS
                             const isSarandiRS = (normName === "sarandi" && !isPR);
                             const isTapejaraRS = (normName === "tapejara" && !isPR);
+                            const isRioClaroSP = (normName === "rioclaro" && isSP);
+                            const isCafelandiaSP = (normName === "cafelandia" && isSP);
+                            const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && String(ibgeCode).startsWith("43"));
                             
                             if (highlightCities.includes(normName)) {
-                                // ALTERAÇÃO AQUI: Mudança da cor de preenchimento para vermelho (#ef4444)
-                                return {
-                                    fillColor: '#ef4444',  // Vermelho
-                                    weight: 2,             // Borda mais grossa
-                                    color: '#ffffff',
-                                    opacity: 1,
-                                    fillOpacity: 0.9       // Quase sem transparência
-                                };
+                                return { fillColor: '#ef4444', weight: 2, color: '#ffffff', opacity: 1, fillOpacity: 0.9 };
                             } else if (orangeCities.includes(normName) && !isPalmeiraSC) {
-                                return {
-                                    fillColor: '#f97316',  // Laranja
-                                    weight: 1.5,
-                                    color: '#ffffff',
-                                    opacity: 1,
-                                    fillOpacity: 0.85
-                                };
+                                return { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
                             } else if (yellowCities.includes(normName)) {
-                                return {
-                                    fillColor: '#eab308',  // Amarelo
-                                    weight: 1.5,
-                                    color: '#ffffff',
-                                    opacity: 1,
-                                    fillOpacity: 0.85
-                                };
+                                return { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
                             } else if (blueCities.includes(normName)) {
-                                return {
-                                    fillColor: '#3b82f6',  // Azul
-                                    weight: 1.5,
-                                    color: '#ffffff',
-                                    opacity: 1,
-                                    fillOpacity: 0.85
-                                };
+                                return { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+                            } else if (cyanCities.includes(normName) && !isCafelandiaSP) {
+                                return { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Ciano
+                            } else if (tealCities.includes(normName)) {
+                                return { fillColor: '#14b8a6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Teal (Sorocaba)
+                            } else if (indigoCities.includes(normName) && !isRioClaroSP) {
+                                return { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Indigo (Barra Mansa)
+                            } else if (fuchsiaCities.includes(normName) && isSP) {
+                                return { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Fúcsia (Marília)
+                            } else if (amberCities.includes(normName) && isSP) {
+                                return { fillColor: '#f59e0b', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Âmbar (SJRP)
+                            } else if (skyCities.includes(normName) && isPR) {
+                                return { fillColor: '#0ea5e9', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Azul Céu (Telêmaco Borba)
+                            } else if (roseCities.includes(normName) && !isCruzeiroDoSulRS) {
+                                return { fillColor: '#f43f5e', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Rose (Paranavaí)
+                            } else if (emeraldCities.includes(normName) && isSP) {
+                                return { fillColor: '#10b981', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Esmeralda (Campinas)
                             } else if (greenCities.includes(normName) && !isCatanduvasPR) {
-                                return {
-                                    fillColor: '#22c55e',  // Verde
-                                    weight: 1.5,
-                                    color: '#ffffff',
-                                    opacity: 1,
-                                    fillOpacity: 0.75
-                                };
+                                return { fillColor: '#22c55e', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.75 };
                             } else if (lilacCities.includes(normName)) {
-                                return {
-                                    fillColor: '#a855f7',  // Lilás
-                                    weight: 1.5,
-                                    color: '#ffffff',
-                                    opacity: 1,
-                                    fillOpacity: 0.85
-                                };
+                                return { fillColor: '#a855f7', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
                             } else if (pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
-                                return {
-                                    fillColor: '#ec4899',  // Rosa
-                                    weight: 1.5,
-                                    color: '#ffffff',
-                                    opacity: 1,
-                                    fillOpacity: 0.85
-                                };
+                                return { fillColor: '#ec4899', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
                             } else {
-                                return {
-                                    fillColor: '#cbd5e1',  // Cinza Claro
-                                    weight: 0.8,
-                                    color: '#ffffff',
-                                    opacity: 0.5,
-                                    fillOpacity: 0.25      // Bem transparente
-                                };
+                                return { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25 };
                             }
                         },
                         
-                        // Lógica de Interação: O que acontece ao clicar em um município
+                        // Lógica de Interação
                         onEachFeature: function (feature, layer) {
                             const rawName = feature.properties.name || feature.properties.description || "Desconhecido";
                             const normName = normalize(rawName);
-                            
                             const ibgeCode = feature.id || (feature.properties && feature.properties.id) || "";
+                            
                             const isSC = String(ibgeCode).startsWith("42");
                             const isPR = String(ibgeCode).startsWith("41");
+                            const isSP = String(ibgeCode).startsWith("35");
                             
                             const isPalmeiraSC = (normName === "palmeira" && isSC);
                             const isCatanduvasPR = (normName === "catanduvas" && isPR);
-                            
                             const isSarandiRS = (normName === "sarandi" && !isPR);
                             const isTapejaraRS = (normName === "tapejara" && !isPR);
+                            const isRioClaroSP = (normName === "rioclaro" && isSP);
+                            const isCafelandiaSP = (normName === "cafelandia" && isSP);
+                            const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && String(ibgeCode).startsWith("43"));
                             
-                            let status = "<span class='text-slate-400 font-medium'>Município do Sul</span>";
+                            // Verifica se é uma das Cidades Sede garantindo o estado correto
+                            const isHeadquarter = headquarters.some(hq => hq.name === normName && String(ibgeCode).startsWith(hq.state));
+                            if(isHeadquarter) {
+                                headquarterLayers.push(layer); // Guarda para criar o PIN no centro depois
+                            }
+
+                            let status = "<span class='text-slate-400 font-medium'>Município</span>";
                             
-                            // Se for da lista, adicionamos hover e interações especiais
                             if(highlightCities.includes(normName)) {
-                                // ALTERAÇÃO AQUI: Mudança das classes Tailwind de orange para red no popup
                                 status = "<span class='text-red-600 font-bold bg-red-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Revendas sem anúncios V4</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(orangeCities.includes(normName) && !isPalmeiraSC) {
@@ -380,6 +506,30 @@
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(blueCities.includes(normName)) {
                                 status = "<span class='text-blue-600 font-bold bg-blue-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Sapucaia do Sul</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(cyanCities.includes(normName) && !isCafelandiaSP) {
+                                status = "<span class='text-cyan-600 font-bold bg-cyan-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Umuarama</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(tealCities.includes(normName)) {
+                                status = "<span class='text-teal-600 font-bold bg-teal-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Sorocaba</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(indigoCities.includes(normName) && !isRioClaroSP) {
+                                status = "<span class='text-indigo-600 font-bold bg-indigo-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Barra Mansa</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(fuchsiaCities.includes(normName) && isSP) {
+                                status = "<span class='text-fuchsia-600 font-bold bg-fuchsia-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Marília</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(amberCities.includes(normName) && isSP) {
+                                status = "<span class='text-amber-600 font-bold bg-amber-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot São José do Rio Preto</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(skyCities.includes(normName) && isPR) {
+                                status = "<span class='text-sky-600 font-bold bg-sky-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Telêmaco Borba</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(roseCities.includes(normName) && !isCruzeiroDoSulRS) {
+                                status = "<span class='text-rose-600 font-bold bg-rose-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Paranavaí</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(emeraldCities.includes(normName) && isSP) {
+                                status = "<span class='text-emerald-600 font-bold bg-emerald-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Campinas</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(greenCities.includes(normName) && !isCatanduvasPR) {
                                 status = "<span class='text-green-600 font-bold bg-green-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Joaçaba</span>";
@@ -392,10 +542,23 @@
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             }
                             
+                            // Criação de badge extra se for sede
+                            let hqBadgeHtml = "";
+                            if (isHeadquarter) {
+                                hqBadgeHtml = `
+                                    <div class='text-[10px] bg-slate-800 text-yellow-300 font-bold px-2 py-0.5 rounded-full mt-1 border border-slate-700 uppercase tracking-widest shadow-sm flex items-center gap-1'>
+                                        <svg class='w-3 h-3' fill='currentColor' viewBox='0 0 20 20'><path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z'/></svg> 
+                                        Cidade Sede
+                                    </div>`;
+                            }
+
                             const popupContent = `
                                 <div class="text-center p-2 flex flex-col items-center gap-1">
                                     <h3 class="font-black text-slate-800 text-lg leading-tight m-0 p-0">${rawName}</h3>
-                                    <div class="mt-2">${status}</div>
+                                    <div class="mt-2 flex flex-col items-center gap-1">
+                                        ${status}
+                                        ${hqBadgeHtml}
+                                    </div>
                                 </div>
                             `;
                             
@@ -406,14 +569,31 @@
                     geoJsonLayer.addTo(allLayersGroup);
                 });
                 
-                // Adiciona tudo ao mapa e aproxima a câmera perfeitamente para envolver a região sul inteira
                 allLayersGroup.addTo(map);
                 map.fitBounds(allLayersGroup.getBounds(), { padding: [20, 20] });
+
+                // ADICIONANDO OS PINS DE ESTRELA NAS CIDADES SEDES
+                headquarterLayers.forEach(layer => {
+                    const center = layer.getBounds().getCenter();
+                    const hqIcon = L.divIcon({
+                        className: 'hq-pin',
+                        html: `
+                            <div class="hq-icon-container" title="Cidade Sede">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#fbbf24" stroke="#451a03" stroke-width="1.2" style="width:28px; height:28px; filter: drop-shadow(0px 3px 3px rgba(0,0,0,0.6));">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.148.621-.531 1.115-1.069.8l-4.836-2.828a.563.563 0 00-.548 0l-4.836 2.828c-.538.315-1.217-.179-1.069-.8l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.95.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
+                                </svg>
+                            </div>
+                        `,
+                        iconSize: [28, 28],
+                        iconAnchor: [14, 14] // Centraliza perfeitamente o meio da estrela no centroid do polígono
+                    });
+                    
+                    // Definimos interactive: false para que clicar na estrela abra o balão da cidade logo abaixo
+                    L.marker(center, { icon: hqIcon, interactive: false }).addTo(map);
+                });
+
             })
             .catch(error => {
-                console.error("Erro ao carregar malha geoespacial:", error);
-                
-                // Em caso de falha de internet/API, mostramos erro na tela de forma amigável ao invés de alert()
                 const loader = document.getElementById('loading');
                 loader.innerHTML = `
                     <div class="bg-red-100 p-4 rounded-full mb-4 shadow-sm border border-red-200">
@@ -421,75 +601,140 @@
                     </div>
                     <h2 class="text-2xl font-bold text-slate-800 mb-3">Erro ao conectar aos dados</h2>
                     <p class="text-slate-500 text-center max-w-md bg-slate-100 p-4 rounded-xl border border-slate-200">
-                        Não foi possível baixar os mapas (GeoJSON). Por favor, verifique sua conexão com a internet e atualize a página.
+                        Não foi possível baixar os mapas. Atualize a página.
                     </p>
                 `;
             })
             .finally(() => {
-                // Desaparecer tela de carregamento se tudo deu certo
                 if (!document.querySelector('#loading .text-red-500')) {
                     const loader = document.getElementById('loading');
                     loader.classList.add('opacity-0');
-                    setTimeout(() => {
-                        loader.style.display = 'none';
-                    }, 500); // 500ms para a animação fade out
+                    setTimeout(() => { loader.style.display = 'none'; }, 500);
                 }
             });
 
         
-        // Objeto formatado com os nomes oficiais acentuados para apresentação no Modal
+        // Objeto formatado com as divisões de estados e ordem alfabética para a interface do Modal (Para copiar em texto)
         const displayCities = {
-            red: {
-                title: "Revendas sem anúncios V4",
-                cities: [
-                    "Umuarama", "Maringá", "Telêmaco Borba", "Paranavaí", "Curitiba", "Arapoti", "Araucária", "Cascavel", "Cianorte", "Fazenda Rio Grande", "Rolândia", "Campo Mourão", "Apucarana", "Toledo", "Ibiporã",
-                    "Barra Mansa",
-                    "São Leopoldo", "Farroupilha", "Caxias do Sul",
-                    "Criciúma", "Joinville", "Concórdia",
-                    "Campinas", "Marília", "São José do Rio Preto", "Sorocaba", "Bragança Paulista", "Guarulhos", "Piracicaba", "Jundiaí", "Americana", "Bauru", "Fernandópolis", "Presidente Prudente", "Itapetininga", "Santa Bárbara d'Oeste", "Dois Córregos", "Leme", "São José dos Campos", "Descalvado"
-                ].sort()
-            },
-            orange: {
-                title: "Velot Campo Largo",
-                cities: [
-                    "Campo Largo", "Campo Magro", "Balsa Nova", "Contenda", "Lapa", "São José dos Pinhais", "Pinhais", "Colombo", "Piraquara", "Quatro Barras", "Almirante Tamandaré", "Rio Branco do Sul", "Mandirituba", "Porto Amazonas", "Palmeira"
-                ].sort()
-            },
             blue: {
                 title: "Velot Sapucaia do Sul",
                 cities: [
-                    "Porto Alegre", "Canoas", "Esteio", "Sapucaia do Sul", "Novo Hamburgo", "Campo Bom", "Estância Velha", "Portão", "Ivoti", "Dois Irmãos", "Nova Santa Rita", "Triunfo", "Eldorado do Sul", "Guaíba", "Alvorada", "Viamão", "Cachoeirinha", "Gravataí", "Glorinha", "Morro Reuter", "Lindolfo Collor", "Nova Hartz", "Araricá", "Sapiranga", "Parobé", "Três Coroas", "Montenegro", "São Sebastião do Caí", "Capela de Santana", "Bom Princípio", "Feliz"
-                ].sort()
+                    "--- RIO GRANDE DO SUL (RS) ---",
+                    "Alvorada", "Araricá", "Cachoeirinha", "Campo Bom", "Canoas", "Capela de Santana", "Dois Irmãos", "Eldorado do Sul", "Estância Velha", "Esteio", "Glorinha", "Gravataí", "Guaíba", "Harmonia", "Igrejinha", "Ivoti", "Lindolfo Collor", "Montenegro", "Morro Reuter", "Nova Hartz", "Nova Santa Rita", "Novo Hamburgo", "Pareci Novo", "Parobé", "Portão", "Porto Alegre", "Presidente Lucena", "São José do Hortêncio", "São Sebastião do Caí", "Sapiranga", "Sapucaia do Sul", "Taquara", "Triunfo", "Viamão"
+                ]
             },
             green: {
                 title: "Velot Joaçaba",
                 cities: [
+                    "--- SANTA CATARINA (SC) ---",
                     "Abdon Batista", "Água Doce", "Brunópolis", "Caçador", "Campos Novos", "Capinzal", "Catanduvas", "Celso Ramos", "Erval Velho", "Herval d'Oeste", "Ibiam", "Ibicaré", "Ibicuí", "Irani", "Jaborá", "Joaçaba", "Lacerdópolis", "Luzerna", "Monte Carlo", "Ouro", "Pinheiro Preto", "Ponte Serrada", "Tangará", "Treze Tílias", "Vargem Bonita", "Videira", "Zortéa"
-                ].sort()
+                ]
+            },
+            orange: {
+                title: "Velot Campo Largo",
+                cities: [
+                    "--- PARANÁ (PR) ---",
+                    "Balsa Nova", "Campo Largo", "Campo Magro", "Itaperuçu", "Lapa", "Palmeira", "Porto Amazonas", "Rio Branco do Sul", "São João do Triunfo"
+                ]
             },
             yellow: {
                 title: "Velot Londrina",
                 cities: [
-                    "Londrina", "Cambé", "Arapongas", "Sertanópolis", "Bela Vista do Paraíso"
-                ].sort()
-            },
-            purple: {
-                title: "Velot Ponta Grossa",
-                cities: [
-                    "Ponta Grossa", "Castro", "Imbituva", "Ipiranga", "Carambeí", "Abapã", "Ivaí", "Tibagi", "Prudentópolis"
-                ].sort()
+                    "--- PARANÁ (PR) ---",
+                    "Arapongas", "Bela Vista do Paraíso", "Cambé", "Londrina", "Sertanópolis"
+                ]
             },
             pink: {
                 title: "Velot Maringá",
                 cities: [
-                    "Água Boa", "Alto Paraná", "Ângulo", "Aquidaban", "Araruna", "Astorga", "Atalaia",
-                    "Boa Esperança", "Bom Sucesso", "Campina da Lagoa", "Floresta", "Goioerê", "Iporã",
-                    "Iretama", "Itambé", "Ivaiporã", "Jussara", "Kaloré", "Mandaguaçu", "Mandaguari",
-                    "Maria Helena", "Marialva", "Maringá", "Nova Esperança", "Nova Londrina", "Ourizona",
-                    "Paiçandu", "Paraíso do Norte", "Paranacity", "Porto Rico", "Porto São José",
-                    "Presidente Castelo Branco", "Quinta do Sol", "Rondon", "Santa Fé", "São João do Ivaí",
-                    "São Jorge do Ivaí", "São Pedro do Ivaí", "Sarandi", "Tapejara", "Terra Roxa"
-                ].sort()
+                    "--- PARANÁ (PR) ---",
+                    "Bom Sucesso", "Doutor Camargo", "Engenheiro Beltrão", "Fênix", "Floresta", "Itambé", "Kaloré", "Mandaguaçu", "Marialva", "Maringá", "Ourizona", "Paiçandu", "Presidente Castelo Branco", "Quinta do Sol", "São Pedro do Ivaí", "Sarandi", "Terra Boa"
+                ]
+            },
+            cyan: {
+                title: "Velot Umuarama",
+                cities: [
+                    "--- PARANÁ (PR) ---",
+                    "Alto Paraíso", "Alto Piquiri", "Altônia", "Cafezal do Sul", "Cidade Gaúcha", "Cruzeiro do Oeste", "Douradina", "Esperança Nova", "Francisco Alves", "Icaraíma", "Iporã", "Ivaté", "Maria Helena", "Mariluz", "Nova Olímpia", "Perobal", "Pérola", "São Jorge do Patrocínio", "Tapira", "Umuarama", "Xambrê"
+                ]
+            },
+            purple: {
+                title: "Velot Ponta Grossa",
+                cities: [
+                    "--- PARANÁ (PR) ---",
+                    "Carambeí", "Castro", "Imbituva", "Ipiranga", "Ivaí", "Ponta Grossa", "Prudentópolis", "Tibagi"
+                ]
+            },
+            sky: {
+                title: "Velot Telêmaco Borba",
+                cities: [
+                    "--- PARANÁ (PR) ---",
+                    "Arapoti", "Curiúva", "Figueira", "Grandes Rios", "Ibaiti", "Imbaú", "Ortigueira", "Pinhalão", "Reserva", "Rio Branco do Ivaí", "Rosário do Ivaí", "Sapopema", "Telêmaco Borba", "Ventania"
+                ]
+            },
+            rose: {
+                title: "Velot Paranavaí",
+                cities: [
+                    "--- PARANÁ (PR) ---",
+                    "Alto Paraná", "Amaporã", "Cruzeiro do Sul", "Diamante do Norte", "Guairaçá", "Inajá", "Itaúna do Sul", "Loanda", "Mirador", "Nova Aliança do Ivaí", "Nova Esperança", "Nova Londrina", "Paraíso do Norte", "Paranacity", "Paranapoema", "Paranavaí", "Santo Antônio do Caiuá", "São Carlos do Ivaí", "São João do Caiuá", "Tamboara", "Terra Rica",
+                    "",
+                    "--- SÃO PAULO (SP) ---",
+                    "Euclides da Cunha Paulista", "Rosana", "Teodoro Sampaio"
+                ]
+            },
+            teal: {
+                title: "Velot Sorocaba",
+                cities: [
+                    "--- SÃO PAULO (SP) ---",
+                    "Alumínio", "Araçoiaba da Serra", "Ibiúna", "Iperó", "Itu", "Mairinque", "Piedade", "Porto Feliz", "Salto", "Salto de Pirapora", "São Roque", "Sorocaba", "Votorantim"
+                ]
+            },
+            fuchsia: {
+                title: "Velot Marília",
+                cities: [
+                    "--- SÃO PAULO (SP) ---",
+                    "Álvaro de Carvalho", "Alvinlândia", "Assis", "Borá", "Cafelândia", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lins", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pirajuí", "Platina", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"
+                ]
+            },
+            emerald: {
+                title: "Velot Campinas",
+                cities: [
+                    "--- SÃO PAULO (SP) ---",
+                    "Amparo", "Campinas", "Elias Fausto", "Hortolândia", "Indaiatuba", "Jaguariúna", "Monte Mor", "Morungaba", "Pedreira"
+                ]
+            },
+            amber: {
+                title: "Velot São José do Rio Preto",
+                cities: [
+                    "--- SÃO PAULO (SP) ---",
+                    "Bady Bassitt", "Bálsamo", "Barretos", "Bebedouro", "Buritama", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Itápolis", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Pindorama", "Potirendaba", "São Joaquim da Barra", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês", "Votuporanga"
+                ]
+            },
+            indigo: {
+                title: "Velot Barra Mansa",
+                cities: [
+                    "--- RIO DE JANEIRO (RJ) ---",
+                    "Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Guapimirim", "Itaguaí", "Mendes", "Nova Iguaçu", "Paraty", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Rio Claro", "Rio de Janeiro", "Valença", "Vassouras", "Volta Redonda",
+                    "",
+                    "--- SÃO PAULO (SP) ---",
+                    "Bananal", "Guaratinguetá", "Lorena"
+                ]
+            },
+            red: {
+                title: "Revendas sem anúncios V4",
+                cities: [
+                    "--- RIO GRANDE DO SUL (RS) ---",
+                    "Caxias do Sul", "Farroupilha", "São Leopoldo",
+                    "",
+                    "--- SANTA CATARINA (SC) ---",
+                    "Concórdia", "Criciúma", "Joinville",
+                    "",
+                    "--- PARANÁ (PR) ---",
+                    "Apucarana", "Araucária", "Campo Mourão", "Cascavel", "Cianorte", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Rolândia", "Toledo",
+                    "",
+                    "--- SÃO PAULO (SP) ---",
+                    "Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Jundiaí", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"
+                ]
             }
         };
 
@@ -500,7 +745,11 @@
             
             // Preenchendo os dados do modal
             document.getElementById('modalTitle').innerText = data.title;
-            document.getElementById('modalCount').innerText = `Total: ${data.cities.length} cidades`;
+            
+            // Conta as cidades ignorando headers "---" ou espaços em branco
+            const cityCount = data.cities.filter(c => !c.startsWith("---") && c.trim() !== "").length;
+            document.getElementById('modalCount').innerText = `Total: ${cityCount} cidades`;
+            
             document.getElementById('cityListTextarea').value = data.cities.join('\n');
             
             // Animação de entrada
@@ -514,26 +763,21 @@
         // Função para fechar o painel
         function closeModal() {
             const modal = document.getElementById('cityListModal');
-            
-            // Animação de saída
             modal.classList.add('opacity-0');
             document.getElementById('modalContent').classList.add('scale-95');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
         // Função que copia para a área de transferência usando API nativa
         function copyCityList() {
             const textarea = document.getElementById('cityListTextarea');
             textarea.select();
-            textarea.setSelectionRange(0, 99999); // Suporte para mobile
-
+            textarea.setSelectionRange(0, 99999); 
             try {
                 if(navigator.clipboard && window.isSecureContext) {
                     navigator.clipboard.writeText(textarea.value).then(showCopySuccess);
                 } else {
-                    document.execCommand("copy"); // Fallback
+                    document.execCommand("copy"); 
                     showCopySuccess();
                 }
             } catch(e) {
@@ -542,25 +786,89 @@
             }
         }
 
-        // Feedback visual do botão de copiar
         function showCopySuccess() {
             const btn = document.getElementById('copyBtn');
             const icon = btn.querySelector('svg');
             const span = btn.querySelector('span');
-            
-            // Troca visual para Sucesso (Verde)
             btn.classList.replace('bg-blue-600', 'bg-green-600');
             btn.classList.replace('hover:bg-blue-700', 'hover:bg-green-700');
             span.innerText = "Copiado!";
             icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>`;
-            
-            // Restaura o botão após 2.5 segundos
             setTimeout(() => {
                 btn.classList.replace('bg-green-600', 'bg-blue-600');
                 btn.classList.replace('hover:bg-green-700', 'hover:bg-blue-700');
                 span.innerText = "Copiar Lista";
                 icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>`;
             }, 2500);
+        }
+
+        // NOVO: Função Global para Exportar para Excel (.xlsx real)
+        function exportToExcel() {
+            // Definição estruturada de todas as cidades com Estado real para tabela
+            const rawData = [
+                // RS
+                { state: 'RS', group: 'Velot Sapucaia do Sul', cities: ["Alvorada", "Araricá", "Cachoeirinha", "Campo Bom", "Canoas", "Capela de Santana", "Dois Irmãos", "Eldorado do Sul", "Estância Velha", "Esteio", "Glorinha", "Gravataí", "Guaíba", "Harmonia", "Igrejinha", "Ivoti", "Lindolfo Collor", "Montenegro", "Morro Reuter", "Nova Hartz", "Nova Santa Rita", "Novo Hamburgo", "Pareci Novo", "Parobé", "Portão", "Porto Alegre", "Presidente Lucena", "São José do Hortêncio", "São Sebastião do Caí", "Sapiranga", "Sapucaia do Sul", "Taquara", "Triunfo", "Viamão"] },
+                { state: 'RS', group: 'Revendas sem anúncios V4', cities: ["Caxias do Sul", "Farroupilha", "São Leopoldo"] },
+                
+                // SC
+                { state: 'SC', group: 'Velot Joaçaba', cities: ["Abdon Batista", "Água Doce", "Brunópolis", "Caçador", "Campos Novos", "Capinzal", "Catanduvas", "Celso Ramos", "Erval Velho", "Herval d'Oeste", "Ibiam", "Ibicaré", "Ibicuí", "Irani", "Jaborá", "Joaçaba", "Lacerdópolis", "Luzerna", "Monte Carlo", "Ouro", "Pinheiro Preto", "Ponte Serrada", "Tangará", "Treze Tílias", "Vargem Bonita", "Videira", "Zortéa"] },
+                { state: 'SC', group: 'Revendas sem anúncios V4', cities: ["Concórdia", "Criciúma", "Joinville"] },
+                
+                // PR
+                { state: 'PR', group: 'Velot Campo Largo', cities: ["Balsa Nova", "Campo Largo", "Campo Magro", "Itaperuçu", "Lapa", "Palmeira", "Porto Amazonas", "Rio Branco do Sul", "São João do Triunfo"] },
+                { state: 'PR', group: 'Velot Londrina', cities: ["Arapongas", "Bela Vista do Paraíso", "Cambé", "Londrina", "Sertanópolis"] },
+                { state: 'PR', group: 'Velot Maringá', cities: ["Bom Sucesso", "Doutor Camargo", "Engenheiro Beltrão", "Fênix", "Floresta", "Itambé", "Kaloré", "Mandaguaçu", "Marialva", "Maringá", "Ourizona", "Paiçandu", "Presidente Castelo Branco", "Quinta do Sol", "São Pedro do Ivaí", "Sarandi", "Terra Boa"] },
+                { state: 'PR', group: 'Velot Ponta Grossa', cities: ["Carambeí", "Castro", "Imbituva", "Ipiranga", "Ivaí", "Ponta Grossa", "Prudentópolis", "Tibagi"] },
+                { state: 'PR', group: 'Velot Telêmaco Borba', cities: ["Arapoti", "Curiúva", "Figueira", "Grandes Rios", "Ibaiti", "Imbaú", "Ortigueira", "Pinhalão", "Reserva", "Rio Branco do Ivaí", "Rosário do Ivaí", "Sapopema", "Telêmaco Borba", "Ventania"] },
+                { state: 'PR', group: 'Velot Paranavaí', cities: ["Alto Paraná", "Amaporã", "Cruzeiro do Sul", "Diamante do Norte", "Guairaçá", "Inajá", "Itaúna do Sul", "Loanda", "Mirador", "Nova Aliança do Ivaí", "Nova Esperança", "Nova Londrina", "Paraíso do Norte", "Paranacity", "Paranapoema", "Paranavaí", "Santo Antônio do Caiuá", "São Carlos do Ivaí", "São João do Caiuá", "Tamboara", "Terra Rica"] },
+                { state: 'PR', group: 'Velot Umuarama', cities: ["Alto Paraíso", "Alto Piquiri", "Altônia", "Cafezal do Sul", "Cidade Gaúcha", "Cruzeiro do Oeste", "Douradina", "Esperança Nova", "Francisco Alves", "Icaraíma", "Iporã", "Ivaté", "Maria Helena", "Mariluz", "Nova Olímpia", "Perobal", "Pérola", "São Jorge do Patrocínio", "Tapira", "Umuarama", "Xambrê"] },
+                { state: 'PR', group: 'Revendas sem anúncios V4', cities: ["Apucarana", "Araucária", "Campo Mourão", "Cascavel", "Cianorte", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Rolândia", "Toledo"] },
+                
+                // SP
+                { state: 'SP', group: 'Velot Sorocaba', cities: ["Alumínio", "Araçoiaba da Serra", "Ibiúna", "Iperó", "Itu", "Mairinque", "Piedade", "Porto Feliz", "Salto", "Salto de Pirapora", "São Roque", "Sorocaba", "Votorantim"] },
+                { state: 'SP', group: 'Velot Marília', cities: ["Álvaro de Carvalho", "Alvinlândia", "Assis", "Borá", "Cafelândia", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lins", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pirajuí", "Platina", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"] },
+                { state: 'SP', group: 'Velot Campinas', cities: ["Amparo", "Campinas", "Elias Fausto", "Hortolândia", "Indaiatuba", "Jaguariúna", "Monte Mor", "Morungaba", "Pedreira"] },
+                { state: 'SP', group: 'Velot São José do Rio Preto', cities: ["Bady Bassitt", "Bálsamo", "Barretos", "Bebedouro", "Buritama", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Itápolis", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Pindorama", "Potirendaba", "São Joaquim da Barra", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês", "Votuporanga"] },
+                { state: 'SP', group: 'Velot Paranavaí', cities: ["Euclides da Cunha Paulista", "Rosana", "Teodoro Sampaio"] },
+                { state: 'SP', group: 'Velot Barra Mansa', cities: ["Bananal", "Guaratinguetá", "Lorena"] },
+                { state: 'SP', group: 'Revendas sem anúncios V4', cities: ["Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Jundiaí", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"] },
+                
+                // RJ
+                { state: 'RJ', group: 'Velot Barra Mansa', cities: ["Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Guapimirim", "Itaguaí", "Mendes", "Nova Iguaçu", "Paraty", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Rio Claro", "Rio de Janeiro", "Valença", "Vassouras", "Volta Redonda"] }
+            ];
+
+            const excelData = [];
+            const stateOrder = ['RS', 'SC', 'PR', 'SP', 'RJ'];
+            
+            // Formatando os dados para a biblioteca SheetJS
+            stateOrder.forEach(st => {
+                const groupsInState = rawData.filter(d => d.state === st);
+                groupsInState.forEach(g => {
+                    // Ordena as cidades de cada bloco alfabeticamente
+                    g.cities.sort().forEach(city => {
+                        excelData.push({
+                            "Estado": st,
+                            "Grupo / Região": g.group,
+                            "Cidade": city
+                        });
+                    });
+                });
+            });
+
+            // Cria uma nova planilha e adiciona os dados
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Cidades Velot");
+
+            // Ajusta a largura das colunas para ficar visualmente bonito no Excel
+            worksheet['!cols'] = [
+                { wch: 10 }, // Largura da coluna Estado
+                { wch: 30 }, // Largura da coluna Grupo / Região
+                { wch: 35 }  // Largura da coluna Cidade
+            ];
+
+            // Gera o arquivo Excel verdadeiro (.xlsx) e força o download
+            XLSX.writeFile(workbook, "Cidades_Velot_Mapeadas.xlsx");
         }
 
     </script>
