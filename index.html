@@ -339,10 +339,9 @@
 
         // Cidades que devem ser pintadas de Índigo (Velot Barra Mansa)
         const indigoCities = [
-            "angradosreis", "bananal", "barramansa", "barradopirai", "guapimirim", 
-            "guaratingueta", "itaguai", "lorena", "mendes", "novaiguacu", "paraty", 
-            "pinheiral", "pirai", "portoreal", "quatis", "resende", "rioclaro", 
-            "riodejaneiro", "valenca", "vassouras", "voltaredonda"
+            "angradosreis", "barradopirai", "barramansa", "itatiaia", 
+            "mangaratiba", "pinheiral", "pirai", "portoreal", "quatis", 
+            "resende", "valenca", "voltaredonda", "bananal", "cruzeiro"
         ];
 
         // Cidades que devem ser pintadas de Fúcsia (Velot Marília)
@@ -430,7 +429,6 @@
                             const isCatanduvasPR = (normName === "catanduvas" && isPR);
                             const isSarandiRS = (normName === "sarandi" && !isPR);
                             const isTapejaraRS = (normName === "tapejara" && !isPR);
-                            const isRioClaroSP = (normName === "rioclaro" && isSP);
                             const isCafelandiaSP = (normName === "cafelandia" && isSP);
                             const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && String(ibgeCode).startsWith("43"));
                             
@@ -446,7 +444,7 @@
                                 return { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Ciano
                             } else if (tealCities.includes(normName)) {
                                 return { fillColor: '#14b8a6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Teal (Sorocaba)
-                            } else if (indigoCities.includes(normName) && !isRioClaroSP) {
+                            } else if (indigoCities.includes(normName)) {
                                 return { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Indigo (Barra Mansa)
                             } else if (fuchsiaCities.includes(normName) && isSP) {
                                 return { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Fúcsia (Marília)
@@ -483,7 +481,6 @@
                             const isCatanduvasPR = (normName === "catanduvas" && isPR);
                             const isSarandiRS = (normName === "sarandi" && !isPR);
                             const isTapejaraRS = (normName === "tapejara" && !isPR);
-                            const isRioClaroSP = (normName === "rioclaro" && isSP);
                             const isCafelandiaSP = (normName === "cafelandia" && isSP);
                             const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && String(ibgeCode).startsWith("43"));
                             
@@ -513,7 +510,7 @@
                             } else if(tealCities.includes(normName)) {
                                 status = "<span class='text-teal-600 font-bold bg-teal-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Sorocaba</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
-                            } else if(indigoCities.includes(normName) && !isRioClaroSP) {
+                            } else if(indigoCities.includes(normName)) {
                                 status = "<span class='text-indigo-600 font-bold bg-indigo-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Barra Mansa</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(fuchsiaCities.includes(normName) && isSP) {
@@ -714,10 +711,10 @@
                 title: "Velot Barra Mansa",
                 cities: [
                     "--- RIO DE JANEIRO (RJ) ---",
-                    "Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Guapimirim", "Itaguaí", "Mendes", "Nova Iguaçu", "Paraty", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Rio Claro", "Rio de Janeiro", "Valença", "Vassouras", "Volta Redonda",
+                    "Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Itatiaia", "Mangaratiba", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Valença", "Volta Redonda",
                     "",
                     "--- SÃO PAULO (SP) ---",
-                    "Bananal", "Guaratinguetá", "Lorena"
+                    "Bananal", "Cruzeiro"
                 ]
             },
             red: {
@@ -830,11 +827,11 @@
                 { state: 'SP', group: 'Velot Campinas', cities: ["Amparo", "Campinas", "Elias Fausto", "Hortolândia", "Indaiatuba", "Jaguariúna", "Monte Mor", "Morungaba", "Pedreira"] },
                 { state: 'SP', group: 'Velot São José do Rio Preto', cities: ["Bady Bassitt", "Bálsamo", "Barretos", "Bebedouro", "Buritama", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Itápolis", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Pindorama", "Potirendaba", "São Joaquim da Barra", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês", "Votuporanga"] },
                 { state: 'SP', group: 'Velot Paranavaí', cities: ["Euclides da Cunha Paulista", "Rosana", "Teodoro Sampaio"] },
-                { state: 'SP', group: 'Velot Barra Mansa', cities: ["Bananal", "Guaratinguetá", "Lorena"] },
+                { state: 'SP', group: 'Velot Barra Mansa', cities: ["Bananal", "Cruzeiro"] },
                 { state: 'SP', group: 'Revendas sem anúncios V4', cities: ["Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Jundiaí", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"] },
                 
                 // RJ
-                { state: 'RJ', group: 'Velot Barra Mansa', cities: ["Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Guapimirim", "Itaguaí", "Mendes", "Nova Iguaçu", "Paraty", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Rio Claro", "Rio de Janeiro", "Valença", "Vassouras", "Volta Redonda"] }
+                { state: 'RJ', group: 'Velot Barra Mansa', cities: ["Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Itatiaia", "Mangaratiba", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Valença", "Volta Redonda"] }
             ];
 
             const excelData = [];
