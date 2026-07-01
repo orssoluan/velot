@@ -99,6 +99,10 @@
         
         <!-- SEÇÃO: RS -->
         <div class="text-[10px] font-black text-slate-400 mt-2 mb-1 pl-1 uppercase tracking-wider">Rio Grande do Sul (RS)</div>
+        <div onclick="openModal('lime')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#84cc16] border-2 border-lime-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-lime-600 transition-colors truncate">Velot São Leopoldo</span>
+        </div>
         <div onclick="openModal('blue')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#3b82f6] border-2 border-blue-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <span class="text-sm text-slate-700 font-medium group-hover:text-blue-600 transition-colors truncate">Velot Sapucaia do Sul</span>
@@ -106,6 +110,10 @@
 
         <!-- SEÇÃO: SC -->
         <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Santa Catarina (SC)</div>
+        <div onclick="openModal('violet')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#8b5cf6] border-2 border-violet-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-violet-600 transition-colors truncate">Velot Criciúma</span>
+        </div>
         <div onclick="openModal('green')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#22c55e] border-2 border-green-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <span class="text-sm text-slate-700 font-medium group-hover:text-green-600 transition-colors truncate">Velot Joaçaba</span>
@@ -209,6 +217,12 @@
     <!-- Container do Mapa -->
     <div id="map"></div>
 
+    <!-- Botão Secreto e Discreto para Copiar Prompt do Gemini -->
+    <button onclick="copyAIPrompt()" class="fixed bottom-1 left-1/2 -translate-x-1/2 z-[9999] text-[9px] text-slate-500 opacity-10 hover:opacity-100 transition-all duration-300 cursor-pointer flex items-center gap-1 p-1 rounded-md hover:bg-white shadow-none hover:shadow-sm" title="Copiar Lembrete de Validação AI">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        <span id="aiPromptSpan">AI Prompt</span>
+    </button>
+
     <script>
         
         // Inicializa o mapa centralizado aproximadamente na região sul
@@ -241,7 +255,9 @@
         
         // DEFINIÇÃO DAS CIDADES SEDE COM SEUS RESPECTIVOS ESTADOS (Para evitar conflitos de nomes iguais)
         const headquarters = [
+            { name: "saoleopoldo", state: "43" },   // RS
             { name: "sapucaiadosul", state: "43" }, // RS
+            { name: "criciuma", state: "42" },      // SC
             { name: "joacaba", state: "42" },       // SC
             { name: "campolargo", state: "41" },    // PR
             { name: "londrina", state: "41" },      // PR
@@ -265,9 +281,9 @@
             "cascavel", "cianorte", "fazendariogrande", "rolandia", "campomourao", 
             "apucarana", "toledo", "ibipora",
             // Rio Grande do Sul
-            "saoleopoldo", "farroupilha", "caxiasdosul",
+            "farroupilha", "caxiasdosul",
             // Santa Catarina
-            "criciuma", "joinville", "concordia",
+            "joinville", "concordia",
             // São Paulo 
             "bragancapaulista", 
             "guarulhos", "piracicaba", "jundiai", "americana", "bauru", 
@@ -275,16 +291,27 @@
             "doiscorregos", "leme", "saojosedoscampos", "descalvado"
         ];
 
-        // Cidades que devem ser pintadas de Azul (Cidades do RS)
+        // Cidades que devem ser pintadas de Verde Limão (Velot São Leopoldo)
+        const limeCities = [
+            "ararica", "campobom", "capeladesantana", "doisirmaos", "estanciavelha",
+            "harmonia", "igrejinha", "ivoti", "lindolfocollor", "montenegro", 
+            "morroreuter", "novahartz", "novohamburgo", "parecinovo", "parobe", 
+            "portao", "presidentelucena", "saojosedohortencio", "saoleopoldo",
+            "saosebastiaodocai", "sapiranga", "taquara"
+        ];
+
+        // Cidades que devem ser pintadas de Azul (Velot Sapucaia do Sul)
         const blueCities = [
-            "alvorada", "ararica", "cachoeirinha", "campobom", "canoas",
-            "capeladesantana", "doisirmaos", "eldoradodosul", "estanciavelha",
-            "esteio", "glorinha", "gravatai", "guaiba", "harmonia", "igrejinha",
-            "ivoti", "lindolfocollor", "montenegro", "morroreuter", "novahartz",
-            "novasantarita", "novohamburgo", "parecinovo", "parobe", "portao",
-            "portoalegre", "presidentelucena", "saojosedohortencio",
-            "saosebastiaodocai", "sapiranga", "sapucaiadosul", "taquara", "triunfo",
-            "viamao"
+            "alvorada", "cachoeirinha", "canoas", "eldoradodosul", "esteio",
+            "glorinha", "gravatai", "guaiba", "novasantarita",
+            "portoalegre", "sapucaiadosul", "triunfo", "viamao"
+        ];
+
+        // Cidades que devem ser pintadas de Violeta (Velot Criciúma)
+        const violetCities = [
+            "ararangua", "cocaldosul", "criciuma", "forquilhinha", "icara", 
+            "jaguaruna", "maracaja", "meleiro", "morrodafumaca", "novaveneza", 
+            "sangao", "sideropolis", "treviso", "urussanga"
         ];
 
         // Cidades que devem ser pintadas de verde
@@ -423,6 +450,7 @@
                             const isSC = String(ibgeCode).startsWith("42");
                             const isPR = String(ibgeCode).startsWith("41");
                             const isSP = String(ibgeCode).startsWith("35");
+                            const isRS = String(ibgeCode).startsWith("43");
                             
                             // Exceções e filtros precisos
                             const isPalmeiraSC = (normName === "palmeira" && isSC);
@@ -430,16 +458,20 @@
                             const isSarandiRS = (normName === "sarandi" && !isPR);
                             const isTapejaraRS = (normName === "tapejara" && !isPR);
                             const isCafelandiaSP = (normName === "cafelandia" && isSP);
-                            const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && String(ibgeCode).startsWith("43"));
+                            const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && isRS);
                             
                             if (highlightCities.includes(normName)) {
                                 return { fillColor: '#ef4444', weight: 2, color: '#ffffff', opacity: 1, fillOpacity: 0.9 };
+                            } else if (limeCities.includes(normName) && isRS) {
+                                return { fillColor: '#84cc16', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Lime (São Leopoldo)
+                            } else if (violetCities.includes(normName) && isSC) {
+                                return { fillColor: '#8b5cf6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Violet (Criciúma)
                             } else if (orangeCities.includes(normName) && !isPalmeiraSC) {
                                 return { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
                             } else if (yellowCities.includes(normName)) {
                                 return { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-                            } else if (blueCities.includes(normName)) {
-                                return { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+                            } else if (blueCities.includes(normName) && isRS) {
+                                return { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Blue (Sapucaia do Sul)
                             } else if (cyanCities.includes(normName) && !isCafelandiaSP) {
                                 return { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Ciano
                             } else if (tealCities.includes(normName)) {
@@ -476,13 +508,14 @@
                             const isSC = String(ibgeCode).startsWith("42");
                             const isPR = String(ibgeCode).startsWith("41");
                             const isSP = String(ibgeCode).startsWith("35");
+                            const isRS = String(ibgeCode).startsWith("43");
                             
                             const isPalmeiraSC = (normName === "palmeira" && isSC);
                             const isCatanduvasPR = (normName === "catanduvas" && isPR);
                             const isSarandiRS = (normName === "sarandi" && !isPR);
                             const isTapejaraRS = (normName === "tapejara" && !isPR);
                             const isCafelandiaSP = (normName === "cafelandia" && isSP);
-                            const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && String(ibgeCode).startsWith("43"));
+                            const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && isRS);
                             
                             // Verifica se é uma das Cidades Sede garantindo o estado correto
                             const isHeadquarter = headquarters.some(hq => hq.name === normName && String(ibgeCode).startsWith(hq.state));
@@ -495,13 +528,19 @@
                             if(highlightCities.includes(normName)) {
                                 status = "<span class='text-red-600 font-bold bg-red-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Revendas sem anúncios V4</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(limeCities.includes(normName) && isRS) {
+                                status = "<span class='text-lime-600 font-bold bg-lime-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot São Leopoldo</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(violetCities.includes(normName) && isSC) {
+                                status = "<span class='text-violet-600 font-bold bg-violet-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Criciúma</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(orangeCities.includes(normName) && !isPalmeiraSC) {
                                 status = "<span class='text-orange-600 font-bold bg-orange-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Campo Largo</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(yellowCities.includes(normName)) {
                                 status = "<span class='text-yellow-600 font-bold bg-yellow-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Londrina</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
-                            } else if(blueCities.includes(normName)) {
+                            } else if(blueCities.includes(normName) && isRS) {
                                 status = "<span class='text-blue-600 font-bold bg-blue-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Sapucaia do Sul</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(cyanCities.includes(normName) && !isCafelandiaSP) {
@@ -613,11 +652,25 @@
         
         // Objeto formatado com as divisões de estados e ordem alfabética para a interface do Modal (Para copiar em texto)
         const displayCities = {
+            lime: {
+                title: "Velot São Leopoldo",
+                cities: [
+                    "--- RIO GRANDE DO SUL (RS) ---",
+                    "Araricá", "Campo Bom", "Capela de Santana", "Dois Irmãos", "Estância Velha", "Harmonia", "Igrejinha", "Ivoti", "Lindolfo Collor", "Montenegro", "Morro Reuter", "Nova Hartz", "Novo Hamburgo", "Pareci Novo", "Parobé", "Portão", "Presidente Lucena", "São José do Hortêncio", "São Leopoldo", "São Sebastião do Caí", "Sapiranga", "Taquara"
+                ]
+            },
             blue: {
                 title: "Velot Sapucaia do Sul",
                 cities: [
                     "--- RIO GRANDE DO SUL (RS) ---",
-                    "Alvorada", "Araricá", "Cachoeirinha", "Campo Bom", "Canoas", "Capela de Santana", "Dois Irmãos", "Eldorado do Sul", "Estância Velha", "Esteio", "Glorinha", "Gravataí", "Guaíba", "Harmonia", "Igrejinha", "Ivoti", "Lindolfo Collor", "Montenegro", "Morro Reuter", "Nova Hartz", "Nova Santa Rita", "Novo Hamburgo", "Pareci Novo", "Parobé", "Portão", "Porto Alegre", "Presidente Lucena", "São José do Hortêncio", "São Sebastião do Caí", "Sapiranga", "Sapucaia do Sul", "Taquara", "Triunfo", "Viamão"
+                    "Alvorada", "Cachoeirinha", "Canoas", "Eldorado do Sul", "Esteio", "Glorinha", "Gravataí", "Guaíba", "Nova Santa Rita", "Porto Alegre", "Sapucaia do Sul", "Triunfo", "Viamão"
+                ]
+            },
+            violet: {
+                title: "Velot Criciúma",
+                cities: [
+                    "--- SANTA CATARINA (SC) ---",
+                    "Araranguá", "Cocal do Sul", "Criciúma", "Forquilhinha", "Içara", "Jaguaruna", "Maracajá", "Meleiro", "Morro da Fumaça", "Nova Veneza", "Sangão", "Siderópolis", "Treviso", "Urussanga"
                 ]
             },
             green: {
@@ -721,10 +774,10 @@
                 title: "Revendas sem anúncios V4",
                 cities: [
                     "--- RIO GRANDE DO SUL (RS) ---",
-                    "Caxias do Sul", "Farroupilha", "São Leopoldo",
+                    "Caxias do Sul", "Farroupilha",
                     "",
                     "--- SANTA CATARINA (SC) ---",
-                    "Concórdia", "Criciúma", "Joinville",
+                    "Concórdia", "Joinville",
                     "",
                     "--- PARANÁ (PR) ---",
                     "Apucarana", "Araucária", "Campo Mourão", "Cascavel", "Cianorte", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Rolândia", "Toledo",
@@ -771,15 +824,10 @@
             textarea.select();
             textarea.setSelectionRange(0, 99999); 
             try {
-                if(navigator.clipboard && window.isSecureContext) {
-                    navigator.clipboard.writeText(textarea.value).then(showCopySuccess);
-                } else {
-                    document.execCommand("copy"); 
-                    showCopySuccess();
-                }
-            } catch(e) {
-                document.execCommand("copy");
+                document.execCommand("copy"); 
                 showCopySuccess();
+            } catch(e) {
+                console.error("Erro ao copiar lista", e);
             }
         }
 
@@ -799,17 +847,41 @@
             }, 2500);
         }
 
+        // Função secreta para copiar o prompt de validação
+        function copyAIPrompt() {
+            const promptText = "Sempre validar se as cidades fazem parte da 'Área de Influência por Deslocamento mapeado para o seu negócio de motos voltado ao público C e D'.";
+            
+            try {
+                const textArea = document.createElement("textarea");
+                textArea.value = promptText;
+                textArea.style.position = "fixed";
+                textArea.style.left = "-9999px";
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+            } catch(e) {
+                console.warn("Erro ao copiar prompt oculto", e);
+            }
+
+            const span = document.getElementById('aiPromptSpan');
+            span.innerText = "Prompt Copiado!";
+            setTimeout(() => { span.innerText = "AI Prompt"; }, 2000);
+        }
+
         // NOVO: Função Global para Exportar para Excel (.xlsx real)
         function exportToExcel() {
             // Definição estruturada de todas as cidades com Estado real para tabela
             const rawData = [
                 // RS
-                { state: 'RS', group: 'Velot Sapucaia do Sul', cities: ["Alvorada", "Araricá", "Cachoeirinha", "Campo Bom", "Canoas", "Capela de Santana", "Dois Irmãos", "Eldorado do Sul", "Estância Velha", "Esteio", "Glorinha", "Gravataí", "Guaíba", "Harmonia", "Igrejinha", "Ivoti", "Lindolfo Collor", "Montenegro", "Morro Reuter", "Nova Hartz", "Nova Santa Rita", "Novo Hamburgo", "Pareci Novo", "Parobé", "Portão", "Porto Alegre", "Presidente Lucena", "São José do Hortêncio", "São Sebastião do Caí", "Sapiranga", "Sapucaia do Sul", "Taquara", "Triunfo", "Viamão"] },
-                { state: 'RS', group: 'Revendas sem anúncios V4', cities: ["Caxias do Sul", "Farroupilha", "São Leopoldo"] },
+                { state: 'RS', group: 'Velot São Leopoldo', cities: ["Araricá", "Campo Bom", "Capela de Santana", "Dois Irmãos", "Estância Velha", "Harmonia", "Igrejinha", "Ivoti", "Lindolfo Collor", "Montenegro", "Morro Reuter", "Nova Hartz", "Novo Hamburgo", "Pareci Novo", "Parobé", "Portão", "Presidente Lucena", "São José do Hortêncio", "São Leopoldo", "São Sebastião do Caí", "Sapiranga", "Taquara"] },
+                { state: 'RS', group: 'Velot Sapucaia do Sul', cities: ["Alvorada", "Cachoeirinha", "Canoas", "Eldorado do Sul", "Esteio", "Glorinha", "Gravataí", "Guaíba", "Nova Santa Rita", "Porto Alegre", "Sapucaia do Sul", "Triunfo", "Viamão"] },
+                { state: 'RS', group: 'Revendas sem anúncios V4', cities: ["Caxias do Sul", "Farroupilha"] },
                 
                 // SC
+                { state: 'SC', group: 'Velot Criciúma', cities: ["Araranguá", "Cocal do Sul", "Criciúma", "Forquilhinha", "Içara", "Jaguaruna", "Maracajá", "Meleiro", "Morro da Fumaça", "Nova Veneza", "Sangão", "Siderópolis", "Treviso", "Urussanga"] },
                 { state: 'SC', group: 'Velot Joaçaba', cities: ["Abdon Batista", "Água Doce", "Brunópolis", "Caçador", "Campos Novos", "Capinzal", "Catanduvas", "Celso Ramos", "Erval Velho", "Herval d'Oeste", "Ibiam", "Ibicaré", "Ibicuí", "Irani", "Jaborá", "Joaçaba", "Lacerdópolis", "Luzerna", "Monte Carlo", "Ouro", "Pinheiro Preto", "Ponte Serrada", "Tangará", "Treze Tílias", "Vargem Bonita", "Videira", "Zortéa"] },
-                { state: 'SC', group: 'Revendas sem anúncios V4', cities: ["Concórdia", "Criciúma", "Joinville"] },
+                { state: 'SC', group: 'Revendas sem anúncios V4', cities: ["Concórdia", "Joinville"] },
                 
                 // PR
                 { state: 'PR', group: 'Velot Campo Largo', cities: ["Balsa Nova", "Campo Largo", "Campo Magro", "Itaperuçu", "Lapa", "Palmeira", "Porto Amazonas", "Rio Branco do Sul", "São João do Triunfo"] },
