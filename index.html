@@ -152,6 +152,10 @@
 
         <!-- SEÇÃO: SP -->
         <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">São Paulo (SP)</div>
+        <div onclick="openModal('jundiai')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#3b82f6] border-2 border-blue-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-blue-600 transition-colors truncate">Velot Jundiaí</span>
+        </div>
         <div onclick="openModal('emerald')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#10b981] border-2 border-emerald-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <span class="text-sm text-slate-700 font-medium group-hover:text-emerald-600 transition-colors truncate">Velot Campinas</span>
@@ -233,24 +237,45 @@
         // Reposiciona o controle de zoom para não cobrir outros elementos da UI
         L.control.zoom({ position: 'topright' }).addTo(map);
 
-        // Utilizamos um mapa base claro (sem rótulos) para deixar as cores destacarem
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+        // CAMADAS DE MAPA BASE
+        // 1. Mapa claro e limpo (Padrão atual)
+        const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap &copy; CARTO',
             subdomains: 'abcd',
             maxZoom: 19
-        }).addTo(map);
+        });
+        
+        // 2. Mapa detalhado com Rodovias, Relevo e Ruas (OpenStreetMap)
+        const detailedMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19
+        });
+
+        // Adiciona o mapa claro por padrão
+        lightMap.addTo(map);
         
         // Truque de cartografia: Uma camada separada SÓ com os rótulos de texto
         // Renderizada *acima* dos polígonos coloridos, garantindo leitura perfeita
         map.createPane('labels');
         map.getPane('labels').style.zIndex = 650;
         map.getPane('labels').style.pointerEvents = 'none';
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+        const labelsMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
             attribution: '',
             subdomains: 'abcd',
             maxZoom: 19,
             pane: 'labels'
-        }).addTo(map);
+        });
+        labelsMap.addTo(map);
+
+        // CONTROLE DE CAMADAS NO CANTO SUPERIOR DIREITO
+        const baseMaps = {
+            "Mapa Limpo (Focar nas Cores)": lightMap,
+            "Mapa com Rodovias e Vias": detailedMap
+        };
+        const overlayMaps = {
+            "Nomes das Cidades": labelsMap
+        };
+        L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
 
         
         // DEFINIÇÃO DAS CIDADES SEDE COM SEUS RESPECTIVOS ESTADOS (Para evitar conflitos de nomes iguais)
@@ -267,12 +292,12 @@
             { name: "paranavai", state: "41" },     // PR
             { name: "umuarama", state: "41" },      // PR
             { name: "campinas", state: "35" },      // SP
+            { name: "jundiai", state: "35" },       // SP (NOVA SEDE)
             { name: "marilia", state: "35" },       // SP
             { name: "sorocaba", state: "35" },      // SP
             { name: "saojosedoriopreto", state: "35" }, // SP
             { name: "barramansa", state: "33" }     // RJ
         ];
-
 
         // Cidades que devem receber cor de destaque (AGORA VERMELHO)
         const highlightCities = [
@@ -284,9 +309,9 @@
             "farroupilha", "caxiasdosul",
             // Santa Catarina
             "joinville", "concordia",
-            // São Paulo 
+            // São Paulo (Removidos jundiai e indaiatuba para suas franquias)
             "bragancapaulista", 
-            "guarulhos", "piracicaba", "jundiai", "americana", "bauru", 
+            "guarulhos", "piracicaba", "americana", "bauru", 
             "fernandopolis", "presidenteprudente", "itapetininga", "santabarbaradooeste", 
             "doiscorregos", "leme", "saojosedoscampos", "descalvado"
         ];
@@ -306,7 +331,7 @@
             "glorinha", "gravatai", "guaiba", "novasantarita",
             "portoalegre", "sapucaiadosul", "triunfo", "viamao"
         ];
-
+        
         // Cidades que devem ser pintadas de Violeta (Velot Criciúma)
         const violetCities = [
             "ararangua", "cocaldosul", "criciuma", "forquilhinha", "icara", 
@@ -314,7 +339,7 @@
             "sangao", "sideropolis", "treviso", "urussanga"
         ];
 
-        // Cidades que devem ser pintadas de verde
+        // Cidades que devem ser pintadas de verde (Velot Joaçaba)
         const greenCities = [
             // Santa Catarina (SC)
             "abdonbatista", "aguadoce", "brunopolis", "cacador", "camposnovos", 
@@ -324,7 +349,7 @@
             "tangara", "trezetilias", "vargembonita", "videira", "zortea"
         ];
 
-        // Cidades que devem ser pintadas de Lilás
+        // Cidades que devem ser pintadas de Lilás (Velot Ponta Grossa)
         const lilacCities = [
             "pontagrossa", "castro", "imbituva", 
             "ipiranga", "carambei", "ivai", "tibagi", "prudentopolis"
@@ -359,9 +384,8 @@
 
         // Cidades que devem ser pintadas de Verde-Azulado (Velot Sorocaba)
         const tealCities = [
-            "aluminio", "aracoiabadaserra", "ibiuna", "ipero", "itu", "mairinque", 
-            "piedade", "portofeliz", "salto", "saltodepirapora", "saoroque", 
-            "sorocaba", "votorantim"
+            "aluminio", "aracoiabadaserra", "ipero", "itu", "mairinque", 
+            "portofeliz", "salto", "saltodepirapora", "sorocaba", "votorantim"
         ];
 
         // Cidades que devem ser pintadas de Índigo (Velot Barra Mansa)
@@ -373,17 +397,22 @@
 
         // Cidades que devem ser pintadas de Fúcsia (Velot Marília)
         const fuchsiaCities = [
-            "alvarodecarvalho", "alvinlandia", "assis", "bora", "cafelandia", 
-            "camposnovospaulista", "duartina", "echapora", "galia", "garca", "getulina", 
-            "guaimbe", "guaranta", "herculandia", "juliomesquita", "lins", "lupercio", 
-            "lutecia", "marilia", "ocaucu", "oriente", "oscarbressane", "pirajui", 
-            "platina", "pompeia", "queiroz", "quintana", "saopedrodoturvo", "veracruz"
+            "alvarodecarvalho", "bora", "camposnovospaulista", "duartina", 
+            "echapora", "galia", "garca", "getulina", "guaimbe", "guaranta", 
+            "herculandia", "juliomesquita", "lupercio", "lutecia", "marilia", 
+            "ocaucu", "oriente", "oscarbressane", "pompeia", "queiroz", "quintana", 
+            "saopedrodoturvo", "veracruz"
         ];
 
         // Cidades que devem ser pintadas de Esmeralda (Velot Campinas)
         const emeraldCities = [
-            "amparo", "campinas", "eliasfausto", "hortolandia", "indaiatuba", 
-            "jaguariuna", "montemor", "morungaba", "pedreira"
+            "campinas", "eliasfausto", "hortolandia", "indaiatuba", 
+            "jaguariuna", "montemor", "sumare", "valinhos"
+        ];
+        
+        // Cidades que devem ser pintadas de Azul (Velot Jundiaí)
+        const jundiaiCities = [
+            "campolimpopaulista", "itupeva", "jundiai", "louveira", "varzeapaulista"
         ];
 
         // Cidades que devem ser pintadas de Rosa/Cereja (Velot Paranavaí)
@@ -405,11 +434,10 @@
 
         // Cidades que devem ser pintadas de Âmbar (Velot São José do Rio Preto)
         const amberCities = [
-            "badybassitt", "balsamo", "barretos", "bebedouro", "buritama", "cedral", 
-            "guapiacu", "ibira", "ipigua", "itapolis", "jaci", "josebonifacio", 
-            "mirassol", "mirassolandia", "nevespaulista", "nipoa", "novagranada", 
-            "olimpia", "pindorama", "potirendaba", "saojoaquimdabarra", "saojosedoriopreto", 
-            "tanabi", "ubarana", "uchoa", "uniaopaulista", "urupes", "votuporanga"
+            "badybassitt", "balsamo", "cedral", "guapiacu", "ibira", "ipigua", 
+            "jaci", "josebonifacio", "mirassol", "mirassolandia", "nevespaulista", 
+            "nipoa", "novagranada", "olimpia", "potirendaba", "saojosedoriopreto", 
+            "tanabi", "ubarana", "uchoa", "uniaopaulista", "urupes"
         ];
 
         
@@ -421,7 +449,6 @@
                 .replace(/[^a-z0-9]/g, "");
         }
 
-        
         // Utilizando repositório público confíavel com malhas simplificadas do IBGE em formato GeoJSON
         const geojsonUrls = [
             'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-41-mun.json', // PR
@@ -434,70 +461,96 @@
         const allLayersGroup = L.featureGroup();
         const headquarterLayers = []; // Array para guardar os polígonos das sedes
 
+        let isDetailedMap = false;
+
+        function getPolygonStyle(feature) {
+            const rawName = feature.properties.name || feature.properties.description || "";
+            const normName = normalize(rawName);
+            
+            // Extraindo o código do estado a partir do ID do IBGE
+            const ibgeCode = feature.id || (feature.properties && feature.properties.id) || "";
+            const isSC = String(ibgeCode).startsWith("42");
+            const isPR = String(ibgeCode).startsWith("41");
+            const isSP = String(ibgeCode).startsWith("35");
+            const isRS = String(ibgeCode).startsWith("43");
+            
+            // Exceções e filtros precisos
+            const isPalmeiraSC = (normName === "palmeira" && isSC);
+            const isCatanduvasPR = (normName === "catanduvas" && isPR);
+            const isSarandiRS = (normName === "sarandi" && !isPR);
+            const isTapejaraRS = (normName === "tapejara" && !isPR);
+            const isCafelandiaSP = (normName === "cafelandia" && isSP);
+            const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && isRS);
+            
+            let props = { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25 };
+
+            if (highlightCities.includes(normName)) {
+                props = { fillColor: '#ef4444', weight: 2, color: '#ffffff', opacity: 1, fillOpacity: 0.9 };
+            } else if (typeof limeCities !== 'undefined' && limeCities.includes(normName) && isRS) {
+                props = { fillColor: '#84cc16', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+            } else if (typeof violetCities !== 'undefined' && violetCities.includes(normName) && isSC) {
+                props = { fillColor: '#8b5cf6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+            } else if (typeof jundiaiCities !== 'undefined' && jundiaiCities.includes(normName) && isSP) {
+                props = { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+            } else if (typeof orangeCities !== 'undefined' && orangeCities.includes(normName) && !isPalmeiraSC) {
+                props = { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+            } else if (typeof yellowCities !== 'undefined' && yellowCities.includes(normName)) {
+                props = { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+            } else if (typeof blueCities !== 'undefined' && blueCities.includes(normName) && isRS) {
+                props = { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof cyanCities !== 'undefined' && cyanCities.includes(normName) && !isCafelandiaSP) {
+                props = { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof tealCities !== 'undefined' && tealCities.includes(normName)) {
+                props = { fillColor: '#14b8a6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof indigoCities !== 'undefined' && indigoCities.includes(normName)) {
+                props = { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof fuchsiaCities !== 'undefined' && fuchsiaCities.includes(normName) && isSP) {
+                props = { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof amberCities !== 'undefined' && amberCities.includes(normName) && isSP) {
+                props = { fillColor: '#f59e0b', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof skyCities !== 'undefined' && skyCities.includes(normName) && isPR) {
+                props = { fillColor: '#0ea5e9', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof roseCities !== 'undefined' && roseCities.includes(normName) && !isCruzeiroDoSulRS) {
+                props = { fillColor: '#f43f5e', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof emeraldCities !== 'undefined' && emeraldCities.includes(normName) && isSP) {
+                props = { fillColor: '#10b981', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
+            } else if (typeof greenCities !== 'undefined' && greenCities.includes(normName) && !isCatanduvasPR) {
+                props = { fillColor: '#22c55e', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.75 };
+            } else if (typeof lilacCities !== 'undefined' && lilacCities.includes(normName)) {
+                props = { fillColor: '#a855f7', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+            } else if (typeof pinkCities !== 'undefined' && pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
+                props = { fillColor: '#ec4899', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+            }
+
+            // Quando mapa de rodovias estiver ativo, aumenta a transparência para ver as ruas
+            if (isDetailedMap) {
+                props.fillOpacity = props.fillOpacity * 0.35; // Reduz bastante a opacidade do fundo
+                props.opacity = 0.3; // Reduz a opacidade das bordas brancas
+            }
+
+            return props;
+        }
+
+        // Detecta quando o usuário altera a camada no seletor do canto superior direito
+        map.on('baselayerchange', function (e) {
+            isDetailedMap = (e.name === "Mapa com Rodovias e Vias");
+            
+            // Recalcula e aplica a nova transparência para todas as cidades instantaneamente
+            allLayersGroup.eachLayer(function (layer) {
+                if (layer.setStyle) {
+                    layer.setStyle(getPolygonStyle);
+                }
+            });
+        });
+
         // Carrega os 5 estados simultaneamente
         Promise.all(geojsonUrls.map(url => fetch(url).then(res => res.json())))
             .then(dataArray => {
                 dataArray.forEach(geojsonData => {
                     const geoJsonLayer = L.geoJSON(geojsonData, {
                         
-                        // Lógica de Coloração e Estilo Baseada no Nome
-                        style: function (feature) {
-                            const rawName = feature.properties.name || feature.properties.description || "";
-                            const normName = normalize(rawName);
-                            
-                            // Extraindo o código do estado a partir do ID do IBGE (2 primeiros dígitos)
-                            const ibgeCode = feature.id || (feature.properties && feature.properties.id) || "";
-                            const isSC = String(ibgeCode).startsWith("42");
-                            const isPR = String(ibgeCode).startsWith("41");
-                            const isSP = String(ibgeCode).startsWith("35");
-                            const isRS = String(ibgeCode).startsWith("43");
-                            
-                            // Exceções e filtros precisos
-                            const isPalmeiraSC = (normName === "palmeira" && isSC);
-                            const isCatanduvasPR = (normName === "catanduvas" && isPR);
-                            const isSarandiRS = (normName === "sarandi" && !isPR);
-                            const isTapejaraRS = (normName === "tapejara" && !isPR);
-                            const isCafelandiaSP = (normName === "cafelandia" && isSP);
-                            const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && isRS);
-                            
-                            if (highlightCities.includes(normName)) {
-                                return { fillColor: '#ef4444', weight: 2, color: '#ffffff', opacity: 1, fillOpacity: 0.9 };
-                            } else if (limeCities.includes(normName) && isRS) {
-                                return { fillColor: '#84cc16', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Lime (São Leopoldo)
-                            } else if (violetCities.includes(normName) && isSC) {
-                                return { fillColor: '#8b5cf6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Violet (Criciúma)
-                            } else if (orangeCities.includes(normName) && !isPalmeiraSC) {
-                                return { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-                            } else if (yellowCities.includes(normName)) {
-                                return { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-                            } else if (blueCities.includes(normName) && isRS) {
-                                return { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Blue (Sapucaia do Sul)
-                            } else if (cyanCities.includes(normName) && !isCafelandiaSP) {
-                                return { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Ciano
-                            } else if (tealCities.includes(normName)) {
-                                return { fillColor: '#14b8a6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Teal (Sorocaba)
-                            } else if (indigoCities.includes(normName)) {
-                                return { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Indigo (Barra Mansa)
-                            } else if (fuchsiaCities.includes(normName) && isSP) {
-                                return { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Fúcsia (Marília)
-                            } else if (amberCities.includes(normName) && isSP) {
-                                return { fillColor: '#f59e0b', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Âmbar (SJRP)
-                            } else if (skyCities.includes(normName) && isPR) {
-                                return { fillColor: '#0ea5e9', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Azul Céu (Telêmaco Borba)
-                            } else if (roseCities.includes(normName) && !isCruzeiroDoSulRS) {
-                                return { fillColor: '#f43f5e', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Rose (Paranavaí)
-                            } else if (emeraldCities.includes(normName) && isSP) {
-                                return { fillColor: '#10b981', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; // Esmeralda (Campinas)
-                            } else if (greenCities.includes(normName) && !isCatanduvasPR) {
-                                return { fillColor: '#22c55e', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.75 };
-                            } else if (lilacCities.includes(normName)) {
-                                return { fillColor: '#a855f7', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-                            } else if (pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
-                                return { fillColor: '#ec4899', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-                            } else {
-                                return { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25 };
-                            }
-                        },
+                        // Utiliza a nova função dinâmica de estilo
+                        style: getPolygonStyle,
                         
                         // Lógica de Interação
                         onEachFeature: function (feature, layer) {
@@ -533,6 +586,9 @@
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(violetCities.includes(normName) && isSC) {
                                 status = "<span class='text-violet-600 font-bold bg-violet-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Criciúma</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(jundiaiCities.includes(normName) && isSP) {
+                                status = "<span class='text-blue-600 font-bold bg-blue-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Jundiaí</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(orangeCities.includes(normName) && !isPalmeiraSC) {
                                 status = "<span class='text-orange-600 font-bold bg-orange-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Campo Largo</span>";
@@ -649,7 +705,6 @@
                 }
             });
 
-        
         // Objeto formatado com as divisões de estados e ordem alfabética para a interface do Modal (Para copiar em texto)
         const displayCities = {
             lime: {
@@ -732,32 +787,39 @@
                     "Euclides da Cunha Paulista", "Rosana", "Teodoro Sampaio"
                 ]
             },
+            jundiai: {
+                title: "Velot Jundiaí",
+                cities: [
+                    "--- SÃO PAULO (SP) ---",
+                    "Campo Limpo Paulista", "Itupeva", "Jundiaí", "Louveira", "Várzea Paulista"
+                ]
+            },
             teal: {
                 title: "Velot Sorocaba",
                 cities: [
                     "--- SÃO PAULO (SP) ---",
-                    "Alumínio", "Araçoiaba da Serra", "Ibiúna", "Iperó", "Itu", "Mairinque", "Piedade", "Porto Feliz", "Salto", "Salto de Pirapora", "São Roque", "Sorocaba", "Votorantim"
+                    "Alumínio", "Araçoiaba da Serra", "Iperó", "Itu", "Mairinque", "Porto Feliz", "Salto", "Salto de Pirapora", "Sorocaba", "Votorantim"
                 ]
             },
             fuchsia: {
                 title: "Velot Marília",
                 cities: [
                     "--- SÃO PAULO (SP) ---",
-                    "Álvaro de Carvalho", "Alvinlândia", "Assis", "Borá", "Cafelândia", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lins", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pirajuí", "Platina", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"
+                    "Álvaro de Carvalho", "Borá", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"
                 ]
             },
             emerald: {
                 title: "Velot Campinas",
                 cities: [
                     "--- SÃO PAULO (SP) ---",
-                    "Amparo", "Campinas", "Elias Fausto", "Hortolândia", "Indaiatuba", "Jaguariúna", "Monte Mor", "Morungaba", "Pedreira"
+                    "Amparo", "Campinas", "Elias Fausto", "Hortolândia", "Jaguariúna", "Monte Mor", "Morungaba", "Pedreira"
                 ]
             },
             amber: {
                 title: "Velot São José do Rio Preto",
                 cities: [
                     "--- SÃO PAULO (SP) ---",
-                    "Bady Bassitt", "Bálsamo", "Barretos", "Bebedouro", "Buritama", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Itápolis", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Pindorama", "Potirendaba", "São Joaquim da Barra", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês", "Votuporanga"
+                    "Bady Bassitt", "Bálsamo", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Potirendaba", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês"
                 ]
             },
             indigo: {
@@ -783,7 +845,7 @@
                     "Apucarana", "Araucária", "Campo Mourão", "Cascavel", "Cianorte", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Rolândia", "Toledo",
                     "",
                     "--- SÃO PAULO (SP) ---",
-                    "Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Jundiaí", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"
+                    "Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"
                 ]
             }
         };
@@ -894,13 +956,14 @@
                 { state: 'PR', group: 'Revendas sem anúncios V4', cities: ["Apucarana", "Araucária", "Campo Mourão", "Cascavel", "Cianorte", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Rolândia", "Toledo"] },
                 
                 // SP
-                { state: 'SP', group: 'Velot Sorocaba', cities: ["Alumínio", "Araçoiaba da Serra", "Ibiúna", "Iperó", "Itu", "Mairinque", "Piedade", "Porto Feliz", "Salto", "Salto de Pirapora", "São Roque", "Sorocaba", "Votorantim"] },
-                { state: 'SP', group: 'Velot Marília', cities: ["Álvaro de Carvalho", "Alvinlândia", "Assis", "Borá", "Cafelândia", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lins", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pirajuí", "Platina", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"] },
-                { state: 'SP', group: 'Velot Campinas', cities: ["Amparo", "Campinas", "Elias Fausto", "Hortolândia", "Indaiatuba", "Jaguariúna", "Monte Mor", "Morungaba", "Pedreira"] },
-                { state: 'SP', group: 'Velot São José do Rio Preto', cities: ["Bady Bassitt", "Bálsamo", "Barretos", "Bebedouro", "Buritama", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Itápolis", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Pindorama", "Potirendaba", "São Joaquim da Barra", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês", "Votuporanga"] },
+                { state: 'SP', group: 'Velot Sorocaba', cities: ["Alumínio", "Araçoiaba da Serra", "Iperó", "Itu", "Mairinque", "Porto Feliz", "Salto", "Salto de Pirapora", "Sorocaba", "Votorantim"] },
+                { state: 'SP', group: 'Velot Marília', cities: ["Álvaro de Carvalho", "Borá", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"] },
+                { state: 'SP', group: 'Velot Campinas', cities: ["Campinas", "Elias Fausto", "Hortolândia", "Indaiatuba", "Jaguariúna", "Monte Mor", "Sumaré", "Valinhos"] },
+                { state: 'SP', group: 'Velot Jundiaí', cities: ["Campo Limpo Paulista", "Itupeva", "Jundiaí", "Louveira", "Várzea Paulista"] },
+                { state: 'SP', group: 'Velot São José do Rio Preto', cities: ["Bady Bassitt", "Bálsamo", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Potirendaba", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês"] },
                 { state: 'SP', group: 'Velot Paranavaí', cities: ["Euclides da Cunha Paulista", "Rosana", "Teodoro Sampaio"] },
                 { state: 'SP', group: 'Velot Barra Mansa', cities: ["Bananal", "Cruzeiro"] },
-                { state: 'SP', group: 'Revendas sem anúncios V4', cities: ["Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Jundiaí", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"] },
+                { state: 'SP', group: 'Revendas sem anúncios V4', cities: ["Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Indaiatuba", "Itapetininga", "Jundiaí", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"] },
                 
                 // RJ
                 { state: 'RJ', group: 'Velot Barra Mansa', cities: ["Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Itatiaia", "Mangaratiba", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Valença", "Volta Redonda"] }
