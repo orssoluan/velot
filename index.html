@@ -5,10 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mapa de Municípios Selecionados - Sul e Sudeste</title>
     
-    <!-- Importando Tailwind CSS para estilização da interface -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Importando Leaflet CSS e JS para a renderização do mapa interativo -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
@@ -27,7 +24,6 @@
             z-index: 1; 
             background-color: #f8fafc;
         }
-        /* Estilização suave e arredondada para os popups do mapa */
         .custom-popup .leaflet-popup-content-wrapper {
             border-radius: 12px;
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -40,12 +36,10 @@
         .custom-popup .leaflet-popup-tip {
             background: white;
         }
-        /* Barra de rolagem customizada para a legenda caso a tela seja pequena */
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
 
-        /* Estilização e Animação do PIN da Cidade Sede (Estrela) */
         .hq-pin {
             background: transparent;
             border: none;
@@ -62,32 +56,26 @@
         }
     </style>
 
-    <!-- Importando SheetJS para exportar um arquivo XLSX real sem erros no Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body class="relative bg-slate-50 flex flex-col h-screen overflow-hidden">
     
-    <!-- Cabeçalho Velot #1E1E1E -->
     <header class="w-full h-16 bg-[#1E1E1E] flex items-center justify-between px-6 md:px-10 z-[2500] relative shadow-lg flex-shrink-0 border-b border-gray-800">
         <img src="https://www.velot.com.br/images/logo2.svg" alt="Velot Motors" class="h-8 md:h-10 object-contain relative z-10">
         
-        <!-- Título centralizado no cabeçalho -->
         <div class="absolute left-1/2 transform -translate-x-1/2 text-center pointer-events-none">
             <h1 class="text-gray-100 text-sm md:text-base font-bold tracking-widest uppercase">Expansão Digital</h1>
         </div>
 
-        <!-- Filtro CSS aplicado (brightness-0 invert) para deixar o logo da V4 branco -->
         <img src="https://brand.v4company.com/_next/image?url=%2Fimages%2Flogos%2Fsimbolo-company.webp&w=256&q=75" alt="V4 Company" class="h-6 md:h-7 object-contain brightness-0 invert relative z-10">
     </header>
 
-    <!-- Tela de Carregamento Overlay (z-index aumentado para 3000 para cobrir o cabeçalho) -->
     <div id="loading" class="absolute inset-0 z-[3000] bg-white bg-opacity-95 backdrop-blur-sm flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500 mb-6 shadow-md"></div>
         <h2 class="text-2xl font-bold text-gray-800 mb-2">Construindo o Mapa...</h2>
         <p class="text-gray-500 max-w-sm text-center">Buscando as malhas municipais e mapeando as cidades da lista.</p>
     </div>
 
-    <!-- Caixa de Legenda -->
     <div class="absolute bottom-6 md:bottom-8 left-6 md:left-8 z-[1000] bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow-xl border border-gray-100 pointer-events-auto shadow-slate-200/50 max-h-[80vh] overflow-y-auto custom-scrollbar w-[280px]">
         <h3 class="font-bold text-slate-800 mb-3 pb-3 border-b border-slate-100 flex flex-col gap-2.5">
             <span class="text-sm uppercase tracking-wide">Geolocalização</span>
@@ -97,7 +85,6 @@
             </div>
         </h3>
         
-        <!-- SEÇÃO: RS -->
         <div class="text-[10px] font-black text-slate-400 mt-2 mb-1 pl-1 uppercase tracking-wider">Rio Grande do Sul (RS)</div>
         <div onclick="openModal('lime')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#84cc16] border-2 border-lime-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
@@ -108,7 +95,6 @@
             <span class="text-sm text-slate-700 font-medium group-hover:text-blue-600 transition-colors truncate">Velot Sapucaia do Sul</span>
         </div>
 
-        <!-- SEÇÃO: SC -->
         <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Santa Catarina (SC)</div>
         <div onclick="openModal('violet')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#8b5cf6] border-2 border-violet-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
@@ -119,7 +105,6 @@
             <span class="text-sm text-slate-700 font-medium group-hover:text-green-600 transition-colors truncate">Velot Joaçaba</span>
         </div>
 
-        <!-- SEÇÃO: PR -->
         <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Paraná (PR)</div>
         <div onclick="openModal('orange')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#f97316] border-2 border-orange-300 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
@@ -150,11 +135,14 @@
             <span class="text-sm text-slate-700 font-medium group-hover:text-cyan-600 transition-colors truncate">Velot Umuarama</span>
         </div>
 
-        <!-- SEÇÃO: SP -->
         <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">São Paulo (SP)</div>
         <div onclick="openModal('jundiai')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
-            <span class="w-5 h-5 rounded-md bg-[#3b82f6] border-2 border-blue-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
-            <span class="text-sm text-slate-700 font-medium group-hover:text-blue-600 transition-colors truncate">Velot Jundiaí</span>
+            <span class="w-5 h-5 rounded-md bg-[#1d4ed8] border-2 border-blue-300 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-blue-800 transition-colors truncate">Velot Jundiaí</span>
+        </div>
+        <div onclick="openModal('indaiatuba')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
+            <span class="w-5 h-5 rounded-md bg-[#a855f7] border-2 border-purple-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <span class="text-sm text-slate-700 font-medium group-hover:text-purple-600 transition-colors truncate">Velot Indaiatuba</span>
         </div>
         <div onclick="openModal('emerald')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#10b981] border-2 border-emerald-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
@@ -173,21 +161,18 @@
             <span class="text-sm text-slate-700 font-medium group-hover:text-amber-600 transition-colors truncate">Velot São José do Rio Preto</span>
         </div>
 
-        <!-- SEÇÃO: RJ & MG -->
         <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Rio de Janeiro & Região</div>
         <div onclick="openModal('indigo')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#6366f1] border-2 border-indigo-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <span class="text-sm text-slate-700 font-medium group-hover:text-indigo-600 transition-colors truncate">Velot Barra Mansa</span>
         </div>
 
-        <!-- SEÇÃO: GERAL -->
         <div class="text-[10px] font-black text-slate-400 mt-3 mb-1 pl-1 uppercase tracking-wider">Geral (Outros)</div>
         <div onclick="openModal('red')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group" title="Ver e copiar lista de cidades">
             <span class="w-5 h-5 rounded-md bg-[#ef4444] border-2 border-red-200 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <span class="text-sm text-slate-700 font-medium group-hover:text-red-600 transition-colors truncate">Revendas s/ anúncios V4</span>
         </div>
 
-        <!-- Botão Exportar Excel Global -->
         <div class="mt-5 pt-4 border-t border-slate-100">
             <button onclick="exportToExcel()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-lg shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all group">
                 <svg class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -229,56 +214,45 @@
 
     <script>
         
-        // Inicializa o mapa centralizado aproximadamente na região sul
         const map = L.map('map', {
             zoomControl: false 
-        }).setView([-23.5, -51.0], 6); // Ajustado o zoom para acomodar melhor a expansão de SP
+        }).setView([-23.5, -51.0], 6); 
 
-        // Reposiciona o controle de zoom para não cobrir outros elementos da UI
-        L.control.zoom({ position: 'topright' }).addTo(map);
+        L.control.zoom({ position: 'topleft' }).addTo(map);
 
-        // CAMADAS DE MAPA BASE
-        // 1. Mapa claro e limpo (Padrão atual)
-        const lightMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+        const mapBase = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap &copy; CARTO',
             subdomains: 'abcd',
             maxZoom: 19
         });
         
-        // 2. Mapa detalhado com Rodovias, Relevo e Ruas (OpenStreetMap)
-        const detailedMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
+        const mapRoads = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
             maxZoom: 19
         });
 
-        // Adiciona o mapa claro por padrão
-        lightMap.addTo(map);
-        
-        // Truque de cartografia: Uma camada separada SÓ com os rótulos de texto
-        // Renderizada *acima* dos polígonos coloridos, garantindo leitura perfeita
+        mapBase.addTo(map);
+
+        const baseMaps = {
+            "Mapa Limpo (Regiões)": mapBase,
+            "Mapa com Rodovias e Vias": mapRoads
+        };
+
+        L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map);
+
         map.createPane('labels');
         map.getPane('labels').style.zIndex = 650;
         map.getPane('labels').style.pointerEvents = 'none';
-        const labelsMap = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
             attribution: '',
             subdomains: 'abcd',
             maxZoom: 19,
             pane: 'labels'
-        });
-        labelsMap.addTo(map);
+        }).addTo(map);
 
-        // CONTROLE DE CAMADAS NO CANTO SUPERIOR DIREITO
-        const baseMaps = {
-            "Mapa Limpo (Focar nas Cores)": lightMap,
-            "Mapa com Rodovias e Vias": detailedMap
-        };
-        const overlayMaps = {
-            "Nomes das Cidades": labelsMap
-        };
-        L.control.layers(baseMaps, overlayMaps, { position: 'topright' }).addTo(map);
+        let fillOp = 0.85; 
+        let borderOp = 1;
 
-        
-        // DEFINIÇÃO DAS CIDADES SEDE COM SEUS RESPECTIVOS ESTADOS (Para evitar conflitos de nomes iguais)
         const headquarters = [
             { name: "saoleopoldo", state: "43" },   // RS
             { name: "sapucaiadosul", state: "43" }, // RS
@@ -293,30 +267,21 @@
             { name: "umuarama", state: "41" },      // PR
             { name: "campinas", state: "35" },      // SP
             { name: "jundiai", state: "35" },       // SP (NOVA SEDE)
+            { name: "indaiatuba", state: "35" },    // SP (NOVA SEDE)
             { name: "marilia", state: "35" },       // SP
             { name: "sorocaba", state: "35" },      // SP
             { name: "saojosedoriopreto", state: "35" }, // SP
             { name: "barramansa", state: "33" }     // RJ
         ];
 
-        // Cidades que devem receber cor de destaque (AGORA VERMELHO)
         const highlightCities = [
-            // Paraná 
-            "curitiba", "araucaria", 
-            "cascavel", "cianorte", "fazendariogrande", "rolandia", "campomourao", 
-            "apucarana", "toledo", "ibipora",
-            // Rio Grande do Sul
-            "farroupilha", "caxiasdosul",
-            // Santa Catarina
-            "joinville", "concordia",
-            // São Paulo (Removidos jundiai e indaiatuba para suas franquias)
-            "bragancapaulista", 
-            "guarulhos", "piracicaba", "americana", "bauru", 
+            "curitiba", "araucaria", "cascavel", "cianorte", "fazendariogrande", "rolandia", "campomourao", 
+            "apucarana", "toledo", "ibipora", "farroupilha", "caxiasdosul", "joinville", "concordia",
+            "bragancapaulista", "guarulhos", "piracicaba", "americana", "bauru", 
             "fernandopolis", "presidenteprudente", "itapetininga", "santabarbaradooeste", 
             "doiscorregos", "leme", "saojosedoscampos", "descalvado"
         ];
 
-        // Cidades que devem ser pintadas de Verde Limão (Velot São Leopoldo)
         const limeCities = [
             "ararica", "campobom", "capeladesantana", "doisirmaos", "estanciavelha",
             "harmonia", "igrejinha", "ivoti", "lindolfocollor", "montenegro", 
@@ -325,56 +290,6 @@
             "saosebastiaodocai", "sapiranga", "taquara"
         ];
 
-        // Cidades que devem ser pintadas de Azul (Velot Sapucaia do Sul)
-        const blueCities = [
-            "alvorada", "cachoeirinha", "canoas", "eldoradodosul", "esteio",
-            "glorinha", "gravatai", "guaiba", "novasantarita",
-            "portoalegre", "sapucaiadosul", "triunfo", "viamao"
-        ];
-        
-        // Cidades que devem ser pintadas de Violeta (Velot Criciúma)
-        const violetCities = [
-            "ararangua", "cocaldosul", "criciuma", "forquilhinha", "icara", 
-            "jaguaruna", "maracaja", "meleiro", "morrodafumaca", "novaveneza", 
-            "sangao", "sideropolis", "treviso", "urussanga"
-        ];
-
-        // Cidades que devem ser pintadas de verde (Velot Joaçaba)
-        const greenCities = [
-            // Santa Catarina (SC)
-            "abdonbatista", "aguadoce", "brunopolis", "cacador", "camposnovos", 
-            "capinzal", "catanduvas", "celsoramos", "ervalvelho", "hervaldoeste", 
-            "ibiam", "ibicare", "ibicui", "irani", "jabora", "joacaba", "lacerdopolis", 
-            "luzerna", "montecarlo", "ouro", "pinheiropreto", "ponteserrada", 
-            "tangara", "trezetilias", "vargembonita", "videira", "zortea"
-        ];
-
-        // Cidades que devem ser pintadas de Lilás (Velot Ponta Grossa)
-        const lilacCities = [
-            "pontagrossa", "castro", "imbituva", 
-            "ipiranga", "carambei", "ivai", "tibagi", "prudentopolis"
-        ];
-
-        // Cidades que devem ser pintadas de Laranja (Velot Campo Largo)
-        const orangeCities = [
-            "balsanova", "campolargo", "campomagro", "itaperucu", "lapa", 
-            "palmeira", "portoamazonas", "riobrancodosul", "saojoaodotriunfo"
-        ];
-
-        // Cidades que devem ser pintadas de Amarelo (Velot Londrina)
-        const yellowCities = [
-            "londrina", "cambe", "arapongas", "sertanopolis", "belavistadoparaiso"
-        ];
-
-        // Cidades que devem ser pintadas de Rosa (Velot Maringá)
-        const pinkCities = [
-            "bomsucesso", "doutorcamargo", "engenheirobeltrao", "fenix", "floresta", 
-            "itambe", "kalore", "mandaguacu", "marialva", "maringa", "ourizona", 
-            "paicandu", "presidentecastelobranco", "quintadosol", 
-            "saopedrodoivai", "sarandi", "terraboa"
-        ];
-
-        // Cidades que devem ser pintadas de Ciano/Azul Claro (Velot Umuarama)
         const cyanCities = [
             "altoparaiso", "altopiquiri", "altonia", "cafezaldosul", "cidadegaucha", 
             "cruzeirodooeste", "douradina", "esperancanova", "franciscoalves", "icaraima", 
@@ -382,20 +297,21 @@
             "perola", "saojorgedopatrocinio", "tapira", "umuarama", "xambre"
         ];
 
-        // Cidades que devem ser pintadas de Verde-Azulado (Velot Sorocaba)
         const tealCities = [
-            "aluminio", "aracoiabadaserra", "ipero", "itu", "mairinque", 
-            "portofeliz", "salto", "saltodepirapora", "sorocaba", "votorantim"
+            "aluminio", "aracoiabadaserra", "ipero", "mairinque", 
+            "portofeliz", "saltodepirapora", "sorocaba", "votorantim"
         ];
 
-        // Cidades que devem ser pintadas de Índigo (Velot Barra Mansa)
+        const indaiatubaCities = [
+            "capivari", "eliasfausto", "indaiatuba", "itu", "montemor", "salto"
+        ];
+
         const indigoCities = [
             "angradosreis", "barradopirai", "barramansa", "itatiaia", 
             "mangaratiba", "pinheiral", "pirai", "portoreal", "quatis", 
             "resende", "valenca", "voltaredonda", "bananal", "cruzeiro"
         ];
 
-        // Cidades que devem ser pintadas de Fúcsia (Velot Marília)
         const fuchsiaCities = [
             "alvarodecarvalho", "bora", "camposnovospaulista", "duartina", 
             "echapora", "galia", "garca", "getulina", "guaimbe", "guaranta", 
@@ -404,18 +320,27 @@
             "saopedrodoturvo", "veracruz"
         ];
 
-        // Cidades que devem ser pintadas de Esmeralda (Velot Campinas)
         const emeraldCities = [
-            "campinas", "eliasfausto", "hortolandia", "indaiatuba", 
-            "jaguariuna", "montemor", "sumare", "valinhos"
+            "campinas", "hortolandia", "jaguariuna", "sumare", "valinhos"
         ];
-        
-        // Cidades que devem ser pintadas de Azul (Velot Jundiaí)
+
         const jundiaiCities = [
             "campolimpopaulista", "itupeva", "jundiai", "louveira", "varzeapaulista"
         ];
 
-        // Cidades que devem ser pintadas de Rosa/Cereja (Velot Paranavaí)
+        const amberCities = [
+            "badybassitt", "balsamo", "cedral", "guapiacu", "ibira", "ipigua", 
+            "jaci", "josebonifacio", "mirassol", "mirassolandia", "nevespaulista", 
+            "nipoa", "novagranada", "olimpia", "potirendaba", "saojosedoriopreto", 
+            "tanabi", "ubarana", "uchoa", "uniaopaulista", "urupes"
+        ];
+
+        const skyCities = [
+            "arapoti", "curiuva", "figueira", "grandesrios", "ibaiti", "imbau", 
+            "ortigueira", "pinhalao", "reserva", "riobrancodoivai", "rosariodoivai", 
+            "sapopema", "telemacoborba", "ventania"
+        ];
+
         const roseCities = [
             "altoparana", "amapora", "cruzeirodosul", "diamantedonorte", 
             "euclidesdacunhapaulista", "guairaca", "inaja", "itaunadosul", 
@@ -425,23 +350,47 @@
             "saojoaodocaiua", "tamboara", "teodorosampaio", "terrarica"
         ];
 
-        // Cidades que devem ser pintadas de Azul Céu (Velot Telêmaco Borba)
-        const skyCities = [
-            "arapoti", "curiuva", "figueira", "grandesrios", "ibaiti", "imbau", 
-            "ortigueira", "pinhalao", "reserva", "riobrancodoivai", "rosariodoivai", 
-            "sapopema", "telemacoborba", "ventania"
+        const greenCities = [
+            "abdonbatista", "aguadoce", "brunopolis", "cacador", "camposnovos", 
+            "capinzal", "catanduvas", "celsoramos", "ervalvelho", "hervaldoeste", 
+            "ibiam", "ibicare", "ibicui", "irani", "jabora", "joacaba", "lacerdopolis", 
+            "luzerna", "montecarlo", "ouro", "pinheiropreto", "ponteserrada", 
+            "tangara", "trezetilias", "vargembonita", "videira", "zortea"
         ];
 
-        // Cidades que devem ser pintadas de Âmbar (Velot São José do Rio Preto)
-        const amberCities = [
-            "badybassitt", "balsamo", "cedral", "guapiacu", "ibira", "ipigua", 
-            "jaci", "josebonifacio", "mirassol", "mirassolandia", "nevespaulista", 
-            "nipoa", "novagranada", "olimpia", "potirendaba", "saojosedoriopreto", 
-            "tanabi", "ubarana", "uchoa", "uniaopaulista", "urupes"
+        const lilacCities = [
+            "pontagrossa", "castro", "imbituva", 
+            "ipiranga", "carambei", "ivai", "tibagi", "prudentopolis"
         ];
 
-        
-        // Função crucial que remove acentos, espaços e maiúsculas
+        const pinkCities = [
+            "bomsucesso", "doutorcamargo", "engenheirobeltrao", "fenix", "floresta", 
+            "itambe", "kalore", "mandaguacu", "marialva", "maringa", "ourizona", 
+            "paicandu", "presidentecastelobranco", "quintadosol", 
+            "saopedrodoivai", "sarandi", "terraboa"
+        ];
+
+        const orangeCities = [
+            "balsanova", "campolargo", "campomagro", "itaperucu", "lapa", 
+            "palmeira", "portoamazonas", "riobrancodosul", "saojoaodotriunfo"
+        ];
+
+        const yellowCities = [
+            "londrina", "cambe", "arapongas", "sertanopolis", "belavistadoparaiso"
+        ];
+
+        const blueCities = [
+            "alvorada", "cachoeirinha", "canoas", "eldoradodosul", "esteio",
+            "glorinha", "gravatai", "guaiba", "novasantarita",
+            "portoalegre", "sapucaiadosul", "triunfo", "viamao"
+        ];
+
+        const violetCities = [
+            "ararangua", "cocaldosul", "criciuma", "forquilhinha", "icara", 
+            "jaguaruna", "maracaja", "meleiro", "morrodafumaca", "novaveneza", 
+            "sangao", "sideropolis", "treviso", "urussanga"
+        ];
+
         function normalize(name) {
             if (!name) return "";
             return name.toString().toLowerCase()
@@ -449,32 +398,27 @@
                 .replace(/[^a-z0-9]/g, "");
         }
 
-        // Utilizando repositório público confíavel com malhas simplificadas do IBGE em formato GeoJSON
         const geojsonUrls = [
-            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-41-mun.json', // PR
-            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-42-mun.json', // SC
-            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-43-mun.json', // RS
-            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-35-mun.json', // SP
-            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-33-mun.json'  // RJ
+            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-41-mun.json', 
+            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-42-mun.json', 
+            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-43-mun.json', 
+            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-35-mun.json', 
+            'https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-33-mun.json'  
         ];
 
         const allLayersGroup = L.featureGroup();
-        const headquarterLayers = []; // Array para guardar os polígonos das sedes
+        const headquarterLayers = []; 
 
-        let isDetailedMap = false;
-
-        function getPolygonStyle(feature) {
+        function styleFeature(feature) {
             const rawName = feature.properties.name || feature.properties.description || "";
             const normName = normalize(rawName);
             
-            // Extraindo o código do estado a partir do ID do IBGE
             const ibgeCode = feature.id || (feature.properties && feature.properties.id) || "";
             const isSC = String(ibgeCode).startsWith("42");
             const isPR = String(ibgeCode).startsWith("41");
             const isSP = String(ibgeCode).startsWith("35");
             const isRS = String(ibgeCode).startsWith("43");
             
-            // Exceções e filtros precisos
             const isPalmeiraSC = (normName === "palmeira" && isSC);
             const isCatanduvasPR = (normName === "catanduvas" && isPR);
             const isSarandiRS = (normName === "sarandi" && !isPR);
@@ -482,77 +426,55 @@
             const isCafelandiaSP = (normName === "cafelandia" && isSP);
             const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && isRS);
             
-            let props = { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25 };
-
             if (highlightCities.includes(normName)) {
-                props = { fillColor: '#ef4444', weight: 2, color: '#ffffff', opacity: 1, fillOpacity: 0.9 };
-            } else if (typeof limeCities !== 'undefined' && limeCities.includes(normName) && isRS) {
-                props = { fillColor: '#84cc16', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-            } else if (typeof violetCities !== 'undefined' && violetCities.includes(normName) && isSC) {
-                props = { fillColor: '#8b5cf6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-            } else if (typeof jundiaiCities !== 'undefined' && jundiaiCities.includes(normName) && isSP) {
-                props = { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-            } else if (typeof orangeCities !== 'undefined' && orangeCities.includes(normName) && !isPalmeiraSC) {
-                props = { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-            } else if (typeof yellowCities !== 'undefined' && yellowCities.includes(normName)) {
-                props = { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-            } else if (typeof blueCities !== 'undefined' && blueCities.includes(normName) && isRS) {
-                props = { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof cyanCities !== 'undefined' && cyanCities.includes(normName) && !isCafelandiaSP) {
-                props = { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof tealCities !== 'undefined' && tealCities.includes(normName)) {
-                props = { fillColor: '#14b8a6', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof indigoCities !== 'undefined' && indigoCities.includes(normName)) {
-                props = { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof fuchsiaCities !== 'undefined' && fuchsiaCities.includes(normName) && isSP) {
-                props = { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof amberCities !== 'undefined' && amberCities.includes(normName) && isSP) {
-                props = { fillColor: '#f59e0b', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof skyCities !== 'undefined' && skyCities.includes(normName) && isPR) {
-                props = { fillColor: '#0ea5e9', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof roseCities !== 'undefined' && roseCities.includes(normName) && !isCruzeiroDoSulRS) {
-                props = { fillColor: '#f43f5e', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof emeraldCities !== 'undefined' && emeraldCities.includes(normName) && isSP) {
-                props = { fillColor: '#10b981', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 }; 
-            } else if (typeof greenCities !== 'undefined' && greenCities.includes(normName) && !isCatanduvasPR) {
-                props = { fillColor: '#22c55e', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.75 };
-            } else if (typeof lilacCities !== 'undefined' && lilacCities.includes(normName)) {
-                props = { fillColor: '#a855f7', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
-            } else if (typeof pinkCities !== 'undefined' && pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
-                props = { fillColor: '#ec4899', weight: 1.5, color: '#ffffff', opacity: 1, fillOpacity: 0.85 };
+                return { fillColor: '#ef4444', weight: 2, color: '#ffffff', opacity: 1, fillOpacity: fillOp };
+            } else if (limeCities.includes(normName) && isRS) {
+                return { fillColor: '#84cc16', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (violetCities.includes(normName) && isSC) {
+                return { fillColor: '#8b5cf6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (jundiaiCities.includes(normName) && isSP) {
+                return { fillColor: '#1d4ed8', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (orangeCities.includes(normName) && !isPalmeiraSC) {
+                return { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
+            } else if (yellowCities.includes(normName)) {
+                return { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
+            } else if (blueCities.includes(normName) && isRS) {
+                return { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (cyanCities.includes(normName) && !isCafelandiaSP) {
+                return { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (tealCities.includes(normName)) {
+                return { fillColor: '#14b8a6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (indigoCities.includes(normName)) {
+                return { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (fuchsiaCities.includes(normName) && isSP) {
+                return { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (indaiatubaCities.includes(normName) && isSP) {
+                return { fillColor: '#a855f7', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (amberCities.includes(normName) && isSP) {
+                return { fillColor: '#f59e0b', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (skyCities.includes(normName) && isPR) {
+                return { fillColor: '#0ea5e9', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (roseCities.includes(normName) && !isCruzeiroDoSulRS) {
+                return { fillColor: '#f43f5e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (emeraldCities.includes(normName) && isSP) {
+                return { fillColor: '#10b981', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (greenCities.includes(normName) && !isCatanduvasPR) {
+                return { fillColor: '#22c55e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: (fillOp - 0.1) };
+            } else if (lilacCities.includes(normName)) {
+                return { fillColor: '#a855f7', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
+            } else if (pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
+                return { fillColor: '#ec4899', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
+            } else {
+                return { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25 };
             }
-
-            // Quando mapa de rodovias estiver ativo, aumenta a transparência para ver as ruas
-            if (isDetailedMap) {
-                props.fillOpacity = props.fillOpacity * 0.35; // Reduz bastante a opacidade do fundo
-                props.opacity = 0.3; // Reduz a opacidade das bordas brancas
-            }
-
-            return props;
         }
 
-        // Detecta quando o usuário altera a camada no seletor do canto superior direito
-        map.on('baselayerchange', function (e) {
-            isDetailedMap = (e.name === "Mapa com Rodovias e Vias");
-            
-            // Recalcula e aplica a nova transparência para todas as cidades instantaneamente
-            allLayersGroup.eachLayer(function (layer) {
-                if (layer.setStyle) {
-                    layer.setStyle(getPolygonStyle);
-                }
-            });
-        });
-
-        // Carrega os 5 estados simultaneamente
         Promise.all(geojsonUrls.map(url => fetch(url).then(res => res.json())))
             .then(dataArray => {
                 dataArray.forEach(geojsonData => {
                     const geoJsonLayer = L.geoJSON(geojsonData, {
+                        style: styleFeature,
                         
-                        // Utiliza a nova função dinâmica de estilo
-                        style: getPolygonStyle,
-                        
-                        // Lógica de Interação
                         onEachFeature: function (feature, layer) {
                             const rawName = feature.properties.name || feature.properties.description || "Desconhecido";
                             const normName = normalize(rawName);
@@ -570,10 +492,9 @@
                             const isCafelandiaSP = (normName === "cafelandia" && isSP);
                             const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && isRS);
                             
-                            // Verifica se é uma das Cidades Sede garantindo o estado correto
                             const isHeadquarter = headquarters.some(hq => hq.name === normName && String(ibgeCode).startsWith(hq.state));
                             if(isHeadquarter) {
-                                headquarterLayers.push(layer); // Guarda para criar o PIN no centro depois
+                                headquarterLayers.push(layer); 
                             }
 
                             let status = "<span class='text-slate-400 font-medium'>Município</span>";
@@ -588,7 +509,7 @@
                                 status = "<span class='text-violet-600 font-bold bg-violet-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Criciúma</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(jundiaiCities.includes(normName) && isSP) {
-                                status = "<span class='text-blue-600 font-bold bg-blue-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Jundiaí</span>";
+                                status = "<span class='text-blue-800 font-bold bg-blue-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Jundiaí</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(orangeCities.includes(normName) && !isPalmeiraSC) {
                                 status = "<span class='text-orange-600 font-bold bg-orange-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Campo Largo</span>";
@@ -610,6 +531,9 @@
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(fuchsiaCities.includes(normName) && isSP) {
                                 status = "<span class='text-fuchsia-600 font-bold bg-fuchsia-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Marília</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(indaiatubaCities.includes(normName) && isSP) {
+                                status = "<span class='text-purple-600 font-bold bg-purple-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Indaiatuba</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(amberCities.includes(normName) && isSP) {
                                 status = "<span class='text-amber-600 font-bold bg-amber-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot São José do Rio Preto</span>";
@@ -634,7 +558,6 @@
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             }
                             
-                            // Criação de badge extra se for sede
                             let hqBadgeHtml = "";
                             if (isHeadquarter) {
                                 hqBadgeHtml = `
@@ -664,7 +587,6 @@
                 allLayersGroup.addTo(map);
                 map.fitBounds(allLayersGroup.getBounds(), { padding: [20, 20] });
 
-                // ADICIONANDO OS PINS DE ESTRELA NAS CIDADES SEDES
                 headquarterLayers.forEach(layer => {
                     const center = layer.getBounds().getCenter();
                     const hqIcon = L.divIcon({
@@ -677,10 +599,9 @@
                             </div>
                         `,
                         iconSize: [28, 28],
-                        iconAnchor: [14, 14] // Centraliza perfeitamente o meio da estrela no centroid do polígono
+                        iconAnchor: [14, 14] 
                     });
                     
-                    // Definimos interactive: false para que clicar na estrela abra o balão da cidade logo abaixo
                     L.marker(center, { icon: hqIcon, interactive: false }).addTo(map);
                 });
 
@@ -705,7 +626,21 @@
                 }
             });
 
-        // Objeto formatado com as divisões de estados e ordem alfabética para a interface do Modal (Para copiar em texto)
+        map.on('baselayerchange', function(e) {
+            if (e.name === "Mapa com Rodovias e Vias") {
+                fillOp = 0.25;
+                borderOp = 0.5;
+            } else {
+                fillOp = 0.85;
+                borderOp = 1;
+            }
+            allLayersGroup.eachLayer(function(layer) {
+                if (layer.setStyle) {
+                    layer.setStyle(styleFeature(layer.feature));
+                }
+            });
+        });
+
         const displayCities = {
             lime: {
                 title: "Velot São Leopoldo",
@@ -787,18 +722,11 @@
                     "Euclides da Cunha Paulista", "Rosana", "Teodoro Sampaio"
                 ]
             },
-            jundiai: {
-                title: "Velot Jundiaí",
-                cities: [
-                    "--- SÃO PAULO (SP) ---",
-                    "Campo Limpo Paulista", "Itupeva", "Jundiaí", "Louveira", "Várzea Paulista"
-                ]
-            },
             teal: {
                 title: "Velot Sorocaba",
                 cities: [
                     "--- SÃO PAULO (SP) ---",
-                    "Alumínio", "Araçoiaba da Serra", "Iperó", "Itu", "Mairinque", "Porto Feliz", "Salto", "Salto de Pirapora", "Sorocaba", "Votorantim"
+                    "Alumínio", "Araçoiaba da Serra", "Iperó", "Mairinque", "Porto Feliz", "Salto de Pirapora", "Sorocaba", "Votorantim"
                 ]
             },
             fuchsia: {
@@ -812,7 +740,7 @@
                 title: "Velot Campinas",
                 cities: [
                     "--- SÃO PAULO (SP) ---",
-                    "Amparo", "Campinas", "Elias Fausto", "Hortolândia", "Jaguariúna", "Monte Mor", "Morungaba", "Pedreira"
+                    "Campinas", "Hortolândia", "Jaguariúna", "Sumaré", "Valinhos"
                 ]
             },
             amber: {
@@ -820,6 +748,20 @@
                 cities: [
                     "--- SÃO PAULO (SP) ---",
                     "Bady Bassitt", "Bálsamo", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Potirendaba", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês"
+                ]
+            },
+            jundiai: {
+                title: "Velot Jundiaí",
+                cities: [
+                    "--- SÃO PAULO (SP) ---",
+                    "Campo Limpo Paulista", "Itupeva", "Jundiaí", "Louveira", "Várzea Paulista"
+                ]
+            },
+            indaiatuba: {
+                title: "Velot Indaiatuba",
+                cities: [
+                    "--- SÃO PAULO (SP) ---",
+                    "Capivari", "Elias Fausto", "Indaiatuba", "Itu", "Monte Mor", "Salto"
                 ]
             },
             indigo: {
@@ -850,21 +792,17 @@
             }
         };
 
-        // Função para abrir o painel com as cidades
         function openModal(category) {
             const modal = document.getElementById('cityListModal');
             const data = displayCities[category];
             
-            // Preenchendo os dados do modal
             document.getElementById('modalTitle').innerText = data.title;
             
-            // Conta as cidades ignorando headers "---" ou espaços em branco
             const cityCount = data.cities.filter(c => !c.startsWith("---") && c.trim() !== "").length;
             document.getElementById('modalCount').innerText = `Total: ${cityCount} cidades`;
             
             document.getElementById('cityListTextarea').value = data.cities.join('\n');
             
-            // Animação de entrada
             modal.classList.remove('hidden');
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
@@ -872,7 +810,6 @@
             }, 10);
         }
 
-        // Função para fechar o painel
         function closeModal() {
             const modal = document.getElementById('cityListModal');
             modal.classList.add('opacity-0');
@@ -880,7 +817,6 @@
             setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
-        // Função que copia para a área de transferência usando API nativa
         function copyCityList() {
             const textarea = document.getElementById('cityListTextarea');
             textarea.select();
@@ -909,7 +845,6 @@
             }, 2500);
         }
 
-        // Função secreta para copiar o prompt de validação
         function copyAIPrompt() {
             const promptText = "Sempre validar se as cidades fazem parte da 'Área de Influência por Deslocamento mapeado para o seu negócio de motos voltado ao público C e D'.";
             
@@ -931,9 +866,7 @@
             setTimeout(() => { span.innerText = "AI Prompt"; }, 2000);
         }
 
-        // NOVO: Função Global para Exportar para Excel (.xlsx real)
         function exportToExcel() {
-            // Definição estruturada de todas as cidades com Estado real para tabela
             const rawData = [
                 // RS
                 { state: 'RS', group: 'Velot São Leopoldo', cities: ["Araricá", "Campo Bom", "Capela de Santana", "Dois Irmãos", "Estância Velha", "Harmonia", "Igrejinha", "Ivoti", "Lindolfo Collor", "Montenegro", "Morro Reuter", "Nova Hartz", "Novo Hamburgo", "Pareci Novo", "Parobé", "Portão", "Presidente Lucena", "São José do Hortêncio", "São Leopoldo", "São Sebastião do Caí", "Sapiranga", "Taquara"] },
@@ -956,14 +889,15 @@
                 { state: 'PR', group: 'Revendas sem anúncios V4', cities: ["Apucarana", "Araucária", "Campo Mourão", "Cascavel", "Cianorte", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Rolândia", "Toledo"] },
                 
                 // SP
-                { state: 'SP', group: 'Velot Sorocaba', cities: ["Alumínio", "Araçoiaba da Serra", "Iperó", "Itu", "Mairinque", "Porto Feliz", "Salto", "Salto de Pirapora", "Sorocaba", "Votorantim"] },
+                { state: 'SP', group: 'Velot Sorocaba', cities: ["Alumínio", "Araçoiaba da Serra", "Iperó", "Mairinque", "Porto Feliz", "Salto de Pirapora", "Sorocaba", "Votorantim"] },
                 { state: 'SP', group: 'Velot Marília', cities: ["Álvaro de Carvalho", "Borá", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"] },
-                { state: 'SP', group: 'Velot Campinas', cities: ["Campinas", "Elias Fausto", "Hortolândia", "Indaiatuba", "Jaguariúna", "Monte Mor", "Sumaré", "Valinhos"] },
-                { state: 'SP', group: 'Velot Jundiaí', cities: ["Campo Limpo Paulista", "Itupeva", "Jundiaí", "Louveira", "Várzea Paulista"] },
+                { state: 'SP', group: 'Velot Campinas', cities: ["Campinas", "Hortolândia", "Jaguariúna", "Sumaré", "Valinhos"] },
                 { state: 'SP', group: 'Velot São José do Rio Preto', cities: ["Bady Bassitt", "Bálsamo", "Cedral", "Guapiaçu", "Ibirá", "Ipiguá", "Jaci", "José Bonifácio", "Mirassol", "Mirassolândia", "Neves Paulista", "Nipoã", "Nova Granada", "Olímpia", "Potirendaba", "São José do Rio Preto", "Tanabi", "Ubarana", "Uchoa", "União Paulista", "Urupês"] },
                 { state: 'SP', group: 'Velot Paranavaí', cities: ["Euclides da Cunha Paulista", "Rosana", "Teodoro Sampaio"] },
                 { state: 'SP', group: 'Velot Barra Mansa', cities: ["Bananal", "Cruzeiro"] },
-                { state: 'SP', group: 'Revendas sem anúncios V4', cities: ["Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Indaiatuba", "Itapetininga", "Jundiaí", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"] },
+                { state: 'SP', group: 'Velot Jundiaí', cities: ["Campo Limpo Paulista", "Itupeva", "Jundiaí", "Louveira", "Várzea Paulista"] },
+                { state: 'SP', group: 'Velot Indaiatuba', cities: ["Capivari", "Elias Fausto", "Indaiatuba", "Itu", "Monte Mor", "Salto"] },
+                { state: 'SP', group: 'Revendas sem anúncios V4', cities: ["Americana", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Piracicaba", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José dos Campos"] },
                 
                 // RJ
                 { state: 'RJ', group: 'Velot Barra Mansa', cities: ["Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Itatiaia", "Mangaratiba", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Valença", "Volta Redonda"] }
@@ -972,11 +906,9 @@
             const excelData = [];
             const stateOrder = ['RS', 'SC', 'PR', 'SP', 'RJ'];
             
-            // Formatando os dados para a biblioteca SheetJS
             stateOrder.forEach(st => {
                 const groupsInState = rawData.filter(d => d.state === st);
                 groupsInState.forEach(g => {
-                    // Ordena as cidades de cada bloco alfabeticamente
                     g.cities.sort().forEach(city => {
                         excelData.push({
                             "Estado": st,
@@ -987,19 +919,16 @@
                 });
             });
 
-            // Cria uma nova planilha e adiciona os dados
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Cidades Velot");
 
-            // Ajusta a largura das colunas para ficar visualmente bonito no Excel
             worksheet['!cols'] = [
-                { wch: 10 }, // Largura da coluna Estado
-                { wch: 30 }, // Largura da coluna Grupo / Região
-                { wch: 35 }  // Largura da coluna Cidade
+                { wch: 10 }, 
+                { wch: 30 }, 
+                { wch: 35 }  
             ];
 
-            // Gera o arquivo Excel verdadeiro (.xlsx) e força o download
             XLSX.writeFile(workbook, "Cidades_Velot_Mapeadas.xlsx");
         }
 
