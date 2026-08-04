@@ -272,8 +272,8 @@
         const violetCities = ["ararangua", "cocaldosul", "criciuma", "forquilhinha", "icara", "jaguaruna", "maracaja", "meleiro", "morrodafumaca", "novaveneza", "sangao", "sideropolis", "treviso", "urussanga"];
         const greenCities = ["abdonbatista", "aguadoce", "brunopolis", "cacador", "camposnovos", "capinzal", "catanduvas", "celsoramos", "ervalvelho", "hervaldoeste", "ibiam", "ibicare", "ibicui", "irani", "jabora", "joacaba", "lacerdopolis", "luzerna", "montecarlo", "ouro", "pinheiropreto", "ponteserrada", "tangara", "trezetilias", "vargembonita", "videira", "zortea"];
         const joinvilleCities = ["araquari", "balneariobarradosul", "garuva", "guaramirim", "itapoa", "joinville", "saofranciscodosul"];
-        const orangePRCities = ["araucaria", "balsanova", "campolargo", "campomagro", "carambei", "castro", "palmeira", "pontagrossa", "portoamazonas"];
-        const yellowCities = ["arapongas", "belavistadoparaiso", "cambe", "londrina", "sertanopolis"];
+        const orangePRCities = ["balsanova", "campolargo", "campomagro", "carambei", "castro", "palmeira", "pontagrossa", "portoamazonas"];
+        const yellowCities = ["arapongas", "belavistadoparaiso", "cambe", "londrina", "sertanopolis", "rolandia"];
         const pinkCities = ["bomsucesso", "doutorcamargo", "fenix", "floresta", "itambe", "kalore", "mandaguacu", "marialva", "maringa", "ourizona", "paicandu", "presidentecastelobranco", "saopedrodoivai", "sarandi", "terraboa", "engenheirobeltrao", "quintadosol"];
         const cyanCities = ["altoparaiso", "altopiquiri", "altonia", "cafezaldosul", "cidadegaucha", "cruzeirodooeste", "douradina", "esperancanova", "franciscoalves", "icaraima", "ipora", "ivate", "mariahelena", "mariluz", "novaolimpia", "perobal", "perola", "saojorgedopatrocinio", "tapira", "umuarama", "xambre"];
         const petrolCities = ["campomourao", "peabiru", "araruna", "farol", "luiziana", "mambore", "corumbataidosul", "barbosaferraz", "iretama"];
@@ -286,7 +286,7 @@
         const indaiatubaCities = ["capivari", "eliasfausto", "indaiatuba", "itu", "montemor", "salto"];
         const indigoCities = ["angradosreis", "barradopirai", "barramansa", "itatiaia", "mangaratiba", "pinheiral", "pirai", "portoreal", "quatis", "resende", "valenca", "voltaredonda", "bananal", "cruzeiro"];
 
-        const redCities = ["paranavai", "saojosedoriopreto", "telemacoborba", "arapoti", "bauru", "bragancapaulista", "cascavel", "caxiasdosul", "concordia", "curitiba", "descalvado", "doiscorregos", "farroupilha", "fazendariogrande", "fernandopolis", "guarulhos", "ibipora", "itapetininga", "leme", "presidenteprudente", "santabarbaradoeste", "saojosedoscampos", "toledo", "araucaria"];
+        const redCities = ["paranavai", "saojosedoriopreto", "telemacoborba", "arapoti", "bauru", "bragancapaulista", "cascavel", "caxiasdosul", "concordia", "curitiba", "descalvado", "doiscorregos", "farroupilha", "fazendariogrande", "fernandopolis", "guarulhos", "ibipora", "itapetininga", "leme", "presidenteprudente", "santabarbaradoeste", "saojosedoscampos", "toledo", "araucaria", "apucarana"];
 
         function normalize(name) {
             if (!name) return "";
@@ -540,7 +540,7 @@
             green: { title: "Velot Joaçaba", cities: [ "--- SANTA CATARINA (SC) ---", "Abdon Batista", "Água Doce", "Brunópolis", "Caçador", "Campos Novos", "Capinzal", "Catanduvas", "Celso Ramos", "Erval Velho", "Herval d'Oeste", "Ibiam", "Ibicaré", "Ibicuí", "Irani", "Jaborá", "Joaçaba", "Lacerdópolis", "Luzerna", "Monte Carlo", "Ouro", "Pinheiro Preto", "Ponte Serrada", "Tangará", "Treze Tílias", "Vargem Bonita", "Videira", "Zortéa" ] },
             joinville: { title: "Velot Joinville", cities: [ "--- SANTA CATARINA (SC) ---", "Araquari", "Balneário Barra do Sul", "Garuva", "Guaramirim", "Itapoá", "Joinville", "São Francisco do Sul" ] },
             orangePR: { title: "Velot Campo Largo", cities: [ "--- PARANÁ (PR) ---", "Balsa Nova", "Campo Largo", "Campo Magro", "Carambeí", "Castro", "Palmeira", "Ponta Grossa", "Porto Amazonas" ] },
-            yellow: { title: "Velot Londrina", cities: [ "--- PARANÁ (PR) ---", "Arapongas", "Bela Vista do Paraíso", "Cambé", "Londrina", "Sertanópolis" ] },
+            yellow: { title: "Velot Londrina", cities: [ "--- PARANÁ (PR) ---", "Arapongas", "Bela Vista do Paraíso", "Cambé", "Londrina", "Rolândia", "Sertanópolis" ] },
             pink: { title: "Velot Maringá", cities: [ "--- PARANÁ (PR) ---", "Bom Sucesso", "Doutor Camargo", "Fênix", "Floresta", "Itambé", "Kaloré", "Mandaguaçu", "Marialva", "Maringá", "Ourizona", "Paiçandu", "Presidente Castelo Branco", "São Pedro do Ivaí", "Sarandi", "Terra Boa", "Engenheiro Beltrão", "Quinta do Sol" ] },
             cyan: { title: "Velot Umuarama", cities: [ "--- PARANÁ (PR) ---", "Alto Paraíso", "Alto Piquiri", "Altônia", "Cafezal do Sul", "Cidade Gaúcha", "Cruzeiro do Oeste", "Douradina", "Esperança Nova", "Francisco Alves", "Icaraíma", "Iporã", "Ivaté", "Maria Helena", "Mariluz", "Nova Olímpia", "Perobal", "Pérola", "São Jorge do Patrocínio", "Tapira", "Umuarama", "Xambrê" ] },
             petrol: { title: "Velot Campo Mourão", cities: [ "--- PARANÁ (PR) ---", "Araruna", "Barbosa Ferraz", "Campo Mourão", "Corumbataí do Sul", "Farol", "Iretama", "Luiziana", "Mamborê", "Peabiru" ] },
@@ -556,8 +556,8 @@
                 cities: [
                     "--- RIO GRANDE DO SUL (RS) ---", "Caxias do Sul", "Farroupilha", "",
                     "--- SANTA CATARINA (SC) ---", "Concórdia", "",
-                    "--- PARANÁ (PR) ---", "Arapoti", "Cascavel", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Paranavaí", "Telêmaco Borba", "Toledo", "Araucária", "",
-                    "--- SÃO PAULO (SP) ---", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Presidente Prudente", "São José do Rio Preto", "São José dos Campos"
+                    "--- PARANÁ (PR) ---", "Apucarana", "Arapoti", "Araucária", "Cascavel", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Paranavaí", "Telêmaco Borba", "Toledo", "",
+                    "--- SÃO PAULO (SP) ---", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José do Rio Preto", "São José dos Campos"
                 ]
             }
         };
@@ -641,11 +641,11 @@
                 { state: 'SC', group: 'Revendas sem anúncios V4', cities: ["Concórdia"] },
                 // PR
                 { state: 'PR', group: 'Velot Campo Largo', cities: ["Balsa Nova", "Campo Largo", "Campo Magro", "Carambeí", "Castro", "Palmeira", "Ponta Grossa", "Porto Amazonas"] },
-                { state: 'PR', group: 'Velot Londrina', cities: ["Arapongas", "Bela Vista do Paraíso", "Cambé", "Londrina", "Sertanópolis"] },
+                { state: 'PR', group: 'Velot Londrina', cities: ["Arapongas", "Bela Vista do Paraíso", "Cambé", "Londrina", "Rolândia", "Sertanópolis"] },
                 { state: 'PR', group: 'Velot Maringá', cities: ["Bom Sucesso", "Doutor Camargo", "Fênix", "Floresta", "Itambé", "Kaloré", "Mandaguaçu", "Marialva", "Maringá", "Ourizona", "Paiçandu", "Presidente Castelo Branco", "São Pedro do Ivaí", "Sarandi", "Terra Boa", "Engenheiro Beltrão", "Quinta do Sol"] },
                 { state: 'PR', group: 'Velot Umuarama', cities: ["Alto Paraíso", "Alto Piquiri", "Altônia", "Cafezal do Sul", "Cidade Gaúcha", "Cruzeiro do Oeste", "Douradina", "Esperança Nova", "Francisco Alves", "Icaraíma", "Iporã", "Ivaté", "Maria Helena", "Mariluz", "Nova Olímpia", "Perobal", "Pérola", "São Jorge do Patrocínio", "Tapira", "Umuarama", "Xambrê"] },
                 { state: 'PR', group: 'Velot Campo Mourão', cities: ["Araruna", "Barbosa Ferraz", "Campo Mourão", "Corumbataí do Sul", "Farol", "Iretama", "Luiziana", "Mamborê", "Peabiru"] },
-                { state: 'PR', group: 'Revendas sem anúncios V4', cities: ["Arapoti", "Cascavel", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Paranavaí", "Telêmaco Borba", "Toledo", "Araucária"] },
+                { state: 'PR', group: 'Revendas sem anúncios V4', cities: ["Apucarana", "Arapoti", "Araucária", "Cascavel", "Curitiba", "Fazenda Rio Grande", "Ibiporã", "Paranavaí", "Telêmaco Borba", "Toledo"] },
                 // SP
                 { state: 'SP', group: 'Velot Sorocaba', cities: ["Alumínio", "Araçoiaba da Serra", "Iperó", "Mairinque", "Porto Feliz", "Salto de Pirapora", "Sorocaba", "Votorantim"] },
                 { state: 'SP', group: 'Velot Marília', cities: ["Álvaro de Carvalho", "Borá", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"] },
