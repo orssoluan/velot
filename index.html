@@ -55,6 +55,16 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
         }
+        
+        @keyframes blink-green-map {
+            0% { fill: #4ade80 !important; fill-opacity: 0.3 !important; stroke: #ffffff !important; stroke-width: 1px !important; }
+            50% { fill: #16a34a !important; fill-opacity: 0.9 !important; stroke: #14532d !important; stroke-width: 3px !important; }
+            100% { fill: #4ade80 !important; fill-opacity: 0.3 !important; stroke: #ffffff !important; stroke-width: 1px !important; }
+        }
+        .blinking-city {
+            animation: blink-green-map 1.5s infinite alternate ease-in-out !important;
+            transform-origin: center;
+        }
     </style>
 </head>
 <body class="relative bg-slate-50 flex flex-col h-screen overflow-hidden">
@@ -279,20 +289,25 @@
         const map = L.map('map', { zoomControl: false }).setView([-23.5, -51.0], 6);
         L.control.zoom({ position: 'topleft' }).addTo(map);
 
-        const mapBase = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
-            subdomains: 'abcd', maxZoom: 19
+        const mapBase = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            maxZoom: 16
         });
         
         const mapRoads = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap', maxZoom: 19
+        });
+        
+        const mapOportunidades = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap', maxZoom: 19
         });
 
         mapBase.addTo(map);
 
         const baseMaps = {
-            "Mapa Limpo (Regiões)": mapBase,
-            "Mapa com Rodovias e Vias": mapRoads
+            "Campanhas de tráfego ativas": mapBase,
+            "Mapa com Rodovias": mapRoads,
+            "Oportunidades (Novas Lojas)": mapOportunidades
         };
 
         L.control.layers(baseMaps, null, { position: 'topright' }).addTo(map);
@@ -300,12 +315,49 @@
         map.createPane('labels');
         map.getPane('labels').style.zIndex = 650;
         map.getPane('labels').style.pointerEvents = 'none';
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', {
-            attribution: '', subdomains: 'abcd', maxZoom: 19, pane: 'labels'
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri', maxZoom: 16, pane: 'labels'
         }).addTo(map);
 
         let fillOp = 0.85; 
         let borderOp = 1;
+        let isOportunidadeMode = false;
+
+        const oportunityCities = [
+            "saopaulo", "campinas", "saobernardodocampo", "santoandre", "osasco", 
+            "ribeiraopreto", "mogidascruzes", "maua", "santos", "diadema", "franca", 
+            "florianopolis", 
+            "itajai", "chapeco", "lages", 
+            "fozdoiguacu", "guarapuava", "paranagua", "franciscobeltrao", 
+            "santamaria", "passofundo", "riogrande", "santacruzdosul", "bage"
+        ];
+
+        const oportunityPopulations = {
+            "saopaulo": "11.451.245",
+            "campinas": "1.138.309",
+            "saobernardodocampo": "810.729",
+            "santoandre": "748.919",
+            "osasco": "743.432",
+            "ribeiraopreto": "698.259",
+            "mogidascruzes": "449.955",
+            "maua": "418.261",
+            "santos": "418.608",
+            "diadema": "393.237",
+            "franca": "352.537",
+            "florianopolis": "537.213",
+            "itajai": "264.054",
+            "chapeco": "254.781",
+            "lages": "164.981",
+            "fozdoiguacu": "285.415",
+            "guarapuava": "182.093",
+            "paranagua": "145.829",
+            "franciscobeltrao": "96.666",
+            "santamaria": "271.633",
+            "passofundo": "206.224",
+            "riogrande": "191.900",
+            "santacruzdosul": "133.230",
+            "bage": "117.939"
+        };
 
         const headquarters = [
             { name: "saoleopoldo", state: "43" }, { name: "sapucaiadosul", state: "43" },
@@ -374,7 +426,7 @@
         const headquarterLayers = []; 
 
         function styleFeature(feature) {
-            if (!feature || !feature.properties) return { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25 };
+            if (!feature || !feature.properties) return { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25, className: '' };
             const rawName = feature.properties.name || feature.properties.description || "";
             const normName = normalize(rawName);
             const ibgeCode = feature.id || (feature.properties && feature.properties.id) || "";
@@ -389,51 +441,58 @@
             const isCafelandiaSP = (normName === "cafelandia" && isSP);
             const isCruzeiroDoSulRS = (normName === "cruzeirodosul" && isRS);
             
-            if (redCities.includes(normName)) {
-                return { fillColor: '#ef4444', weight: 2, color: '#ffffff', opacity: 1, fillOpacity: fillOp };
-            } else if (curitibaCities.includes(normName)) {
-                return { fillColor: '#e11d48', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (araucariaCities.includes(normName)) {
-                return { fillColor: '#a855f7', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (joinvilleCities.includes(normName) && isSC) {
-                return { fillColor: '#f43f5e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (limeCities.includes(normName) && isRS) {
-                return { fillColor: '#84cc16', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (violetCities.includes(normName) && isSC) {
-                return { fillColor: '#8b5cf6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (piracicabaCities.includes(normName) && isSP) {
-                return { fillColor: '#ea580c', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (americanaCities.includes(normName) && isSP) {
-                return { fillColor: '#0ea5e9', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (jundiaiCities.includes(normName) && isSP) {
-                return { fillColor: '#1e40af', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (orangePRCities.includes(normName) && !isPalmeiraSC) {
-                return { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
-            } else if (yellowCities.includes(normName)) {
-                return { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
-            } else if (blueRSCities.includes(normName) && isRS) {
-                return { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (cyanCities.includes(normName) && !isCafelandiaSP) {
-                return { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (tealCities.includes(normName)) {
-                return { fillColor: '#14b8a6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (indaiatubaCities.includes(normName) && isSP) {
-                return { fillColor: '#9333ea', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (indigoCities.includes(normName)) {
-                return { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (fuchsiaCities.includes(normName) && isSP) {
-                return { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (emeraldCities.includes(normName)) {
-                return { fillColor: '#10b981', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (petrolCities.includes(normName) && !isCruzeiroDoSulRS) {
-                return { fillColor: '#0f766e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (greenCities.includes(normName) && !isCatanduvasPR) {
-                return { fillColor: '#22c55e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: (fillOp - 0.1) };
-            } else if (pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
-                return { fillColor: '#ec4899', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
-            } else {
-                return { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25 };
+            if (isOportunidadeMode && oportunityCities.includes(normName) && !(normName === 'saojose' && !isSC)) {
+                return { fillColor: '#22c55e', weight: 2, color: '#064e3b', opacity: 1, fillOpacity: 0.9, className: 'blinking-city' };
             }
+
+            let customStyle = { fillColor: '#cbd5e1', weight: 0.8, color: '#ffffff', opacity: 0.5, fillOpacity: 0.25, className: '' };
+
+            if (redCities.includes(normName)) {
+                customStyle = { fillColor: '#ef4444', weight: 2, color: '#ffffff', opacity: 1, fillOpacity: fillOp };
+            } else if (curitibaCities.includes(normName)) {
+                customStyle = { fillColor: '#e11d48', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (araucariaCities.includes(normName)) {
+                customStyle = { fillColor: '#a855f7', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (joinvilleCities.includes(normName) && isSC) {
+                customStyle = { fillColor: '#f43f5e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (limeCities.includes(normName) && isRS) {
+                customStyle = { fillColor: '#84cc16', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (violetCities.includes(normName) && isSC) {
+                customStyle = { fillColor: '#8b5cf6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (piracicabaCities.includes(normName) && isSP) {
+                customStyle = { fillColor: '#ea580c', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (americanaCities.includes(normName) && isSP) {
+                customStyle = { fillColor: '#0ea5e9', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (jundiaiCities.includes(normName) && isSP) {
+                customStyle = { fillColor: '#1e40af', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (orangePRCities.includes(normName) && !isPalmeiraSC) {
+                customStyle = { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
+            } else if (yellowCities.includes(normName)) {
+                customStyle = { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
+            } else if (blueRSCities.includes(normName) && isRS) {
+                customStyle = { fillColor: '#3b82f6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (cyanCities.includes(normName) && !isCafelandiaSP) {
+                customStyle = { fillColor: '#06b6d4', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (tealCities.includes(normName)) {
+                customStyle = { fillColor: '#14b8a6', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (indaiatubaCities.includes(normName) && isSP) {
+                customStyle = { fillColor: '#9333ea', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (indigoCities.includes(normName)) {
+                customStyle = { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (fuchsiaCities.includes(normName) && isSP) {
+                customStyle = { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (emeraldCities.includes(normName)) {
+                customStyle = { fillColor: '#10b981', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (petrolCities.includes(normName) && !isCruzeiroDoSulRS) {
+                customStyle = { fillColor: '#0f766e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
+            } else if (greenCities.includes(normName) && !isCatanduvasPR) {
+                customStyle = { fillColor: '#22c55e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: (fillOp - 0.1) };
+            } else if (pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
+                customStyle = { fillColor: '#ec4899', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
+            }
+
+            customStyle.className = ''; 
+            return customStyle;
         }
 
         Promise.all(geojsonUrls.map(url => fetch(url).then(res => res.json())))
@@ -528,6 +587,12 @@
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             }
                             
+                            if (oportunityCities.includes(normName) && !(normName === 'saojose' && !isSC)) {
+                                const pop = oportunityPopulations[normName] || "N/A";
+                                status = `<div class='flex flex-col items-center gap-1.5'><span class='text-green-700 font-bold bg-green-100 border border-green-300 px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider shadow-sm flex items-center gap-1'><svg class='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13 7h8m0 0v8m0-8l-8 8-4-4-6 6'></path></svg> Oportunidade V4</span><span class='text-[11px] text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded-full border border-slate-200'>População: ${pop} hab.</span></div>`;
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            }
+                            
                             let hqBadgeHtml = "";
                             if (isHeadquarter) {
                                 hqBadgeHtml = `
@@ -595,21 +660,22 @@
             });
 
         map.on('baselayerchange', function(e) {
-            if (e.name === "Mapa com Rodovias e Vias") {
-                fillOp = 0.25; borderOp = 0.5;
+            if (e.name === "Mapa com Rodovias") {
+                fillOp = 0.25; borderOp = 0.5; isOportunidadeMode = false;
+            } else if (e.name === "Oportunidades (Novas Lojas)") {
+                fillOp = 0.25; borderOp = 0.5; isOportunidadeMode = true;
             } else {
-                fillOp = 0.85; borderOp = 1;
+                fillOp = 0.85; borderOp = 1; isOportunidadeMode = false;
             }
+            
             allLayersGroup.eachLayer(function(layer) {
                 if (layer.eachLayer) {
-                    // Se for um grupo de municípios, entra nele para atualizar um por um
                     layer.eachLayer(function(subLayer) {
                         if (subLayer.setStyle && subLayer.feature) { 
                             subLayer.setStyle(styleFeature(subLayer.feature)); 
                         }
                     });
                 } else if (layer.setStyle && layer.feature) { 
-                    // Se for um município sozinho
                     layer.setStyle(styleFeature(layer.feature)); 
                 }
             });
