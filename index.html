@@ -141,14 +141,14 @@
             <span class="w-5 h-5 rounded-md bg-[#a855f7] border-2 border-purple-300 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <div class="flex flex-col truncate">
                 <span class="text-sm text-slate-700 font-medium group-hover:text-purple-700 transition-colors truncate">Velot Araucária</span>
-                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 170.794 hab.</span>
+                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 374.499 hab.</span>
             </div>
         </div>
         <div onclick="openModal('emerald')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group">
             <span class="w-5 h-5 rounded-md bg-[#10b981] border-2 border-emerald-300 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <div class="flex flex-col truncate">
                 <span class="text-sm text-slate-700 font-medium group-hover:text-emerald-700 transition-colors truncate">Velot Lapa</span>
-                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 84.635 hab.</span>
+                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 216.683 hab.</span>
             </div>
         </div>
         <div onclick="openModal('petrol')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group">
@@ -162,7 +162,7 @@
             <span class="w-5 h-5 rounded-md bg-[#f97316] border-2 border-orange-300 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <div class="flex flex-col truncate">
                 <span class="text-sm text-slate-700 font-medium group-hover:text-orange-600 transition-colors truncate">Velot Campo Largo</span>
-                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 672.560 hab.</span>
+                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 621.216 hab.</span>
             </div>
         </div>
         <div onclick="openModal('yellow')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group">
@@ -184,6 +184,13 @@
             <div class="flex flex-col truncate">
                 <span class="text-sm text-slate-700 font-medium group-hover:text-cyan-600 transition-colors truncate">Velot Umuarama</span>
                 <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 284.621 hab.</span>
+            </div>
+        </div>
+        <div onclick="openModal('amber')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group">
+            <span class="w-5 h-5 rounded-md bg-[#f59e0b] border-2 border-amber-300 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
+            <div class="flex flex-col truncate">
+                <span class="text-sm text-slate-700 font-medium group-hover:text-amber-600 transition-colors truncate">Velot Toledo</span>
+                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 665.345 hab.</span>
             </div>
         </div>
 
@@ -364,7 +371,7 @@
             { name: "criciuma", state: "42" }, { name: "joacaba", state: "42" },
             { name: "campolargo", state: "41" }, { name: "londrina", state: "41" }, { name: "lapa", state: "41" },
             { name: "maringa", state: "41" }, { name: "umuarama", state: "41" }, { name: "campomourao", state: "41" },
-            { name: "curitiba", state: "41" }, { name: "araucaria", state: "41" }, 
+            { name: "curitiba", state: "41" }, { name: "araucaria", state: "41" }, { name: "toledo", state: "41" },
             { name: "jundiai", state: "35" },
             { name: "americana", state: "35" }, { name: "piracicaba", state: "35" },
             { name: "marilia", state: "35" }, { name: "sorocaba", state: "35" },
@@ -373,7 +380,7 @@
 
         const highlightCities = [
             // Paraná 
-            "curitiba", "cascavel", "fazendariogrande", 
+            "curitiba", "cascavel", 
             "apucarana", "toledo", "ibipora", "paranavai", "telemacoborba", "arapoti",
             // Rio Grande do Sul
             "farroupilha", "caxiasdosul",
@@ -390,22 +397,23 @@
         const greenCities = ["abdonbatista", "aguadoce", "brunopolis", "cacador", "camposnovos", "capinzal", "catanduvas", "celsoramos", "ervalvelho", "hervaldoeste", "ibiam", "ibicare", "ibicui", "irani", "jabora", "joacaba", "lacerdopolis", "luzerna", "montecarlo", "ouro", "pinheiropreto", "ponteserrada", "tangara", "trezetilias", "vargembonita", "videira", "zortea"];
         const joinvilleCities = [];
         const curitibaCities = ["almirantetamandare", "campinagrandedosul", "colombo", "curitiba", "itaperucu", "pinhais", "piraquara", "quatrobarras", "riobrancodosul", "saojosedospinhais"];
-        const araucariaCities = ["araucaria", "contenda"];
-        const orangePRCities = ["balsanova", "campolargo", "campomagro", "carambei", "castro", "palmeira", "pontagrossa", "portoamazonas"];
+        const araucariaCities = ["agudosdosul", "araucaria", "contenda", "fazendariogrande", "mandirituba", "tijucasdosul"];
+        const orangePRCities = ["campolargo", "campomagro", "carambei", "castro", "pontagrossa"];
         const yellowCities = ["arapongas", "belavistadoparaiso", "cambe", "londrina", "sertanopolis", "rolandia"];
         const pinkCities = ["bomsucesso", "doutorcamargo", "fenix", "floresta", "itambe", "kalore", "mandaguacu", "marialva", "maringa", "ourizona", "paicandu", "presidentecastelobranco", "saopedrodoivai", "sarandi", "terraboa", "engenheirobeltrao", "quintadosol"];
         const cyanCities = ["altoparaiso", "altopiquiri", "altonia", "cafezaldosul", "cidadegaucha", "cruzeirodooeste", "douradina", "esperancanova", "franciscoalves", "icaraima", "ipora", "ivate", "mariahelena", "mariluz", "novaolimpia", "perobal", "perola", "saojorgedopatrocinio", "tapira", "umuarama", "xambre"];
         const petrolCities = ["campomourao", "peabiru", "araruna", "farol", "luiziana", "mambore", "corumbataidosul", "barbosaferraz", "iretama"];
         const tealCities = ["aluminio", "aracoiabadaserra", "ipero", "mairinque", "portofeliz", "saltodepirapora", "sorocaba", "votorantim"];
         const fuchsiaCities = ["alvarodecarvalho", "bora", "camposnovospaulista", "duartina", "echapora", "galia", "garca", "getulina", "guaimbe", "guaranta", "herculandia", "juliomesquita", "lupercio", "lutecia", "marilia", "ocaucu", "oriente", "oscarbressane", "pompeia", "queiroz", "quintana", "saopedrodoturvo", "veracruz"];
-        const emeraldCities = ["campodotenente", "lapa", "quitandinha", "saojoaodotriunfo"];
+        const emeraldCities = ["antonioolinto", "balsanova", "campodotenente", "lapa", "palmeira", "portoamazonas", "quitandinha", "rionegro", "saojoaodotriunfo", "saomateusdosul"];
         const jundiaiCities = ["campolimpopaulista", "itupeva", "jundiai", "louveira", "varzeapaulista"];
         const americanaCities = ["americana", "cosmopolis", "novaodessa", "sumare", "hortolandia"];
         const piracicabaCities = ["iracemapolis", "limeira", "piracicaba", "rioclaro", "riodaspedras", "saltinho"];
         const indaiatubaCities = ["capivari", "eliasfausto", "indaiatuba", "itu", "montemor", "salto"];
         const indigoCities = ["angradosreis", "barradopirai", "barramansa", "itatiaia", "mangaratiba", "pinheiral", "pirai", "portoreal", "quatis", "resende", "valenca", "voltaredonda", "bananal", "cruzeiro"];
+        const amberCities = ["toledo", "ouroverdedooeste", "saopedrodoiguacu", "bragantina", "tupassi", "marechalcandidorondon", "assischateaubriand", "veracruzdooeste", "patobragado", "entreriosdooeste", "palotina", "cascavel"];
 
-        const redCities = ["paranavai", "saojosedoriopreto", "telemacoborba", "arapoti", "bauru", "bragancapaulista", "cascavel", "caxiasdosul", "concordia", "descalvado", "doiscorregos", "farroupilha", "fazendariogrande", "fernandopolis", "guarulhos", "ibipora", "itapetininga", "leme", "presidenteprudente", "santabarbaradoeste", "saojosedoscampos", "toledo", "apucarana", "joinville"];
+        const redCities = ["paranavai", "saojosedoriopreto", "telemacoborba", "arapoti", "bauru", "bragancapaulista", "caxiasdosul", "concordia", "descalvado", "doiscorregos", "farroupilha", "fernandopolis", "guarulhos", "ibipora", "itapetininga", "leme", "presidenteprudente", "santabarbaradoeste", "saojosedoscampos", "apucarana", "joinville"];
 
         function normalize(name) {
             if (!name) return "";
@@ -465,7 +473,7 @@
                 customStyle = { fillColor: '#0ea5e9', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
             } else if (jundiaiCities.includes(normName) && isSP) {
                 customStyle = { fillColor: '#1e40af', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (orangePRCities.includes(normName) && !isPalmeiraSC) {
+            } else if (orangePRCities.includes(normName)) {
                 customStyle = { fillColor: '#f97316', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
             } else if (yellowCities.includes(normName)) {
                 customStyle = { fillColor: '#eab308', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
@@ -481,7 +489,7 @@
                 customStyle = { fillColor: '#6366f1', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
             } else if (fuchsiaCities.includes(normName) && isSP) {
                 customStyle = { fillColor: '#d946ef', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
-            } else if (emeraldCities.includes(normName)) {
+            } else if (emeraldCities.includes(normName) && !isPalmeiraSC) {
                 customStyle = { fillColor: '#10b981', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
             } else if (petrolCities.includes(normName) && !isCruzeiroDoSulRS) {
                 customStyle = { fillColor: '#0f766e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp }; 
@@ -489,6 +497,8 @@
                 customStyle = { fillColor: '#22c55e', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: (fillOp - 0.1) };
             } else if (pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
                 customStyle = { fillColor: '#ec4899', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
+            } else if (amberCities.includes(normName)) {
+                customStyle = { fillColor: '#f59e0b', weight: 1.5, color: '#ffffff', opacity: borderOp, fillOpacity: fillOp };
             }
 
             customStyle.className = ''; 
@@ -552,7 +562,7 @@
                             } else if(indaiatubaCities.includes(normName) && isSP) {
                                 status = "<span class='text-purple-700 font-bold bg-purple-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Indaiatuba</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
-                            } else if(orangePRCities.includes(normName) && !isPalmeiraSC) {
+                            } else if(orangePRCities.includes(normName)) {
                                 status = "<span class='text-orange-600 font-bold bg-orange-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Campo Largo</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(yellowCities.includes(normName)) {
@@ -573,7 +583,7 @@
                             } else if(fuchsiaCities.includes(normName) && isSP) {
                                 status = "<span class='text-fuchsia-600 font-bold bg-fuchsia-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Marília</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
-                            } else if(emeraldCities.includes(normName)) {
+                            } else if(emeraldCities.includes(normName) && !isPalmeiraSC) {
                                 status = "<span class='text-emerald-700 font-bold bg-emerald-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Lapa</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(petrolCities.includes(normName)) {
@@ -584,6 +594,9 @@
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             } else if(pinkCities.includes(normName) && !isSarandiRS && !isTapejaraRS) {
                                 status = "<span class='text-pink-600 font-bold bg-pink-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Maringá</span>";
+                                layer.on('mouseover', function () { this.bringToFront(); });
+                            } else if(amberCities.includes(normName)) {
+                                status = "<span class='text-amber-700 font-bold bg-amber-100 px-2 py-1 rounded-md text-xs uppercase tracking-wide'>Velot Toledo</span>";
                                 layer.on('mouseover', function () { this.bringToFront(); });
                             }
                             
@@ -687,9 +700,9 @@
             violet: { title: "Velot Criciúma", cities: [ "--- SANTA CATARINA (SC) ---", "Araranguá", "Cocal do Sul", "Criciúma", "Forquilhinha", "Içara", "Jaguaruna", "Maracajá", "Meleiro", "Morro da Fumaça", "Nova Veneza", "Sangão", "Siderópolis", "Treviso", "Urussanga" ] },
             green: { title: "Velot Joaçaba", cities: [ "--- SANTA CATARINA (SC) ---", "Abdon Batista", "Água Doce", "Brunópolis", "Caçador", "Campos Novos", "Capinzal", "Catanduvas", "Celso Ramos", "Erval Velho", "Herval d'Oeste", "Ibiam", "Ibicaré", "Ibicuí", "Irani", "Jaborá", "Joaçaba", "Lacerdópolis", "Luzerna", "Monte Carlo", "Ouro", "Pinheiro Preto", "Ponte Serrada", "Tangará", "Treze Tílias", "Vargem Bonita", "Videira", "Zortéa" ] },
             curitiba: { title: "Velot Curitiba", cities: [ "--- PARANÁ (PR) ---", "Almirante Tamandaré", "Campina Grande do Sul", "Colombo", "Curitiba", "Itaperuçu", "Pinhais", "Piraquara", "Quatro Barras", "Rio Branco do Sul", "São José dos Pinhais" ] },
-            araucaria: { title: "Velot Araucária", cities: [ "--- PARANÁ (PR) ---", "Araucária", "Contenda" ] },
-            emerald: { title: "Velot Lapa", cities: [ "--- PARANÁ (PR) ---", "Campo do Tenente", "Lapa", "Quitandinha", "São João do Triunfo" ] },
-            orangePR: { title: "Velot Campo Largo", cities: [ "--- PARANÁ (PR) ---", "Balsa Nova", "Campo Largo", "Campo Magro", "Carambeí", "Castro", "Palmeira", "Ponta Grossa", "Porto Amazonas" ] },
+            araucaria: { title: "Velot Araucária", cities: [ "--- PARANÁ (PR) ---", "Agudos do Sul", "Araucária", "Contenda", "Fazenda Rio Grande", "Mandirituba", "Tijucas do Sul" ] },
+            emerald: { title: "Velot Lapa", cities: [ "--- PARANÁ (PR) ---", "Antônio Olinto", "Balsa Nova", "Campo do Tenente", "Lapa", "Palmeira", "Porto Amazonas", "Quitandinha", "Rio Negro", "São João do Triunfo", "São Mateus do Sul" ] },
+            orangePR: { title: "Velot Campo Largo", cities: [ "--- PARANÁ (PR) ---", "Campo Largo", "Campo Magro", "Carambeí", "Castro", "Ponta Grossa" ] },
             yellow: { title: "Velot Londrina", cities: [ "--- PARANÁ (PR) ---", "Arapongas", "Bela Vista do Paraíso", "Cambé", "Londrina", "Rolândia", "Sertanópolis" ] },
             pink: { title: "Velot Maringá", cities: [ "--- PARANÁ (PR) ---", "Bom Sucesso", "Doutor Camargo", "Fênix", "Floresta", "Itambé", "Kaloré", "Mandaguaçu", "Marialva", "Maringá", "Ourizona", "Paiçandu", "Presidente Castelo Branco", "São Pedro do Ivaí", "Sarandi", "Terra Boa", "Engenheiro Beltrão", "Quinta do Sol" ] },
             cyan: { title: "Velot Umuarama", cities: [ "--- PARANÁ (PR) ---", "Alto Paraíso", "Alto Piquiri", "Altônia", "Cafezal do Sul", "Cidade Gaúcha", "Cruzeiro do Oeste", "Douradina", "Esperança Nova", "Francisco Alves", "Icaraíma", "Iporã", "Ivaté", "Maria Helena", "Mariluz", "Nova Olímpia", "Perobal", "Pérola", "São Jorge do Patrocínio", "Tapira", "Umuarama", "Xambrê" ] },
@@ -701,12 +714,13 @@
             piracicaba: { title: "Velot Piracicaba", cities: [ "--- SÃO PAULO (SP) ---", "Iracemápolis", "Limeira", "Piracicaba", "Rio Claro", "Rio das Pedras", "Saltinho" ] },
             americana: { title: "Velot Americana", cities: [ "--- SÃO PAULO (SP) ---", "Americana", "Cosmópolis", "Hortolândia", "Nova Odessa", "Sumaré" ] },
             indigo: { title: "Velot Barra Mansa", cities: [ "--- RIO DE JANEIRO (RJ) ---", "Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Itatiaia", "Mangaratiba", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Valença", "Volta Redonda", "", "--- SÃO PAULO (SP) ---", "Bananal", "Cruzeiro" ] },
+            amber: { title: "Velot Toledo", cities: [ "--- PARANÁ (PR) ---", "Assis Chateaubriand", "Bragantina", "Cascavel", "Entre Rios do Oeste", "Marechal Cândido Rondon", "Ouro Verde do Oeste", "Palotina", "Pato Bragado", "São Pedro do Iguaçu", "Toledo", "Tupãssi", "Vera Cruz do Oeste" ] },
             red: {
                 title: "Revendas sem anúncios V4",
                 cities: [
                     "--- RIO GRANDE DO SUL (RS) ---", "Caxias do Sul", "Farroupilha", "",
                     "--- SANTA CATARINA (SC) ---", "Concórdia", "Joinville", "",
-                    "--- PARANÁ (PR) ---", "Apucarana", "Arapoti", "Cascavel", "Fazenda Rio Grande", "Ibiporã", "Paranavaí", "Telêmaco Borba", "Toledo", "",
+                    "--- PARANÁ (PR) ---", "Apucarana", "Arapoti", "Ibiporã", "Paranavaí", "Telêmaco Borba", "",
                     "--- SÃO PAULO (SP) ---", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José do Rio Preto", "São José dos Campos"
                 ]
             }
@@ -790,14 +804,15 @@
                 { state: 'SC', group: 'Revendas sem anúncios V4', cities: ["Concórdia", "Joinville"] },
                 // PR
                 { state: 'PR', group: 'Velot Curitiba', cities: ["Almirante Tamandaré", "Campina Grande do Sul", "Colombo", "Curitiba", "Itaperuçu", "Pinhais", "Piraquara", "Quatro Barras", "Rio Branco do Sul", "São José dos Pinhais"] },
-                { state: 'PR', group: 'Velot Araucária', cities: ["Araucária", "Contenda"] },
-                { state: 'PR', group: 'Velot Campo Largo', cities: ["Balsa Nova", "Campo Largo", "Campo Magro", "Carambeí", "Castro", "Palmeira", "Ponta Grossa", "Porto Amazonas"] },
-                { state: 'PR', group: 'Velot Lapa', cities: ["Campo do Tenente", "Lapa", "Quitandinha", "São João do Triunfo"] },
+                { state: 'PR', group: 'Velot Araucária', cities: ["Agudos do Sul", "Araucária", "Contenda", "Fazenda Rio Grande", "Mandirituba", "Tijucas do Sul"] },
+                { state: 'PR', group: 'Velot Campo Largo', cities: ["Campo Largo", "Campo Magro", "Carambeí", "Castro", "Ponta Grossa"] },
+                { state: 'PR', group: 'Velot Lapa', cities: ["Antônio Olinto", "Balsa Nova", "Campo do Tenente", "Lapa", "Palmeira", "Porto Amazonas", "Quitandinha", "Rio Negro", "São João do Triunfo", "São Mateus do Sul"] },
                 { state: 'PR', group: 'Velot Londrina', cities: ["Arapongas", "Bela Vista do Paraíso", "Cambé", "Londrina", "Rolândia", "Sertanópolis"] },
                 { state: 'PR', group: 'Velot Maringá', cities: ["Bom Sucesso", "Doutor Camargo", "Fênix", "Floresta", "Itambé", "Kaloré", "Mandaguaçu", "Marialva", "Maringá", "Ourizona", "Paiçandu", "Presidente Castelo Branco", "São Pedro do Ivaí", "Sarandi", "Terra Boa", "Engenheiro Beltrão", "Quinta do Sol"] },
                 { state: 'PR', group: 'Velot Umuarama', cities: ["Alto Paraíso", "Alto Piquiri", "Altônia", "Cafezal do Sul", "Cidade Gaúcha", "Cruzeiro do Oeste", "Douradina", "Esperança Nova", "Francisco Alves", "Icaraíma", "Iporã", "Ivaté", "Maria Helena", "Mariluz", "Nova Olímpia", "Perobal", "Pérola", "São Jorge do Patrocínio", "Tapira", "Umuarama", "Xambrê"] },
                 { state: 'PR', group: 'Velot Campo Mourão', cities: ["Araruna", "Barbosa Ferraz", "Campo Mourão", "Corumbataí do Sul", "Farol", "Iretama", "Luiziana", "Mamborê", "Peabiru"] },
-                { state: 'PR', group: 'Revendas sem anúncios V4', cities: ["Apucarana", "Arapoti", "Cascavel", "Fazenda Rio Grande", "Ibiporã", "Paranavaí", "Telêmaco Borba", "Toledo"] },
+                { state: 'PR', group: 'Velot Toledo', cities: ["Assis Chateaubriand", "Bragantina", "Cascavel", "Entre Rios do Oeste", "Marechal Cândido Rondon", "Ouro Verde do Oeste", "Palotina", "Pato Bragado", "São Pedro do Iguaçu", "Toledo", "Tupãssi", "Vera Cruz do Oeste"] },
+                { state: 'PR', group: 'Revendas sem anúncios V4', cities: ["Apucarana", "Arapoti", "Ibiporã", "Paranavaí", "Telêmaco Borba"] },
                 // SP
                 { state: 'SP', group: 'Velot Sorocaba', cities: ["Alumínio", "Araçoiaba da Serra", "Iperó", "Mairinque", "Porto Feliz", "Salto de Pirapora", "Sorocaba", "Votorantim"] },
                 { state: 'SP', group: 'Velot Marília', cities: ["Álvaro de Carvalho", "Borá", "Campos Novos Paulista", "Duartina", "Echaporã", "Gália", "Garça", "Getulina", "Guaimbê", "Guarantã", "Herculândia", "Júlio Mesquita", "Lupércio", "Lutécia", "Marília", "Ocauçu", "Oriente", "Oscar Bressane", "Pompéia", "Queiroz", "Quintana", "São Pedro do Turvo", "Vera Cruz"] },
