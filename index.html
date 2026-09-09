@@ -221,7 +221,7 @@
             <span class="w-5 h-5 rounded-md bg-[#0ea5e9] border-2 border-sky-300 shadow-sm block group-hover:scale-110 transition-transform flex-shrink-0"></span>
             <div class="flex flex-col truncate">
                 <span class="text-sm text-slate-700 font-medium group-hover:text-sky-600 transition-colors truncate">Velot Americana</span>
-                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 875.225 hab.</span>
+                <span class="text-[10px] text-slate-400 font-normal leading-none mt-0.5">Pop: 1.169.109 hab.</span>
             </div>
         </div>
         <div onclick="openModal('fuchsia')" class="flex items-center gap-3 mb-1 cursor-pointer hover:bg-slate-100 p-2 -ml-2 rounded-lg transition-colors group">
@@ -322,9 +322,10 @@
         map.createPane('labels');
         map.getPane('labels').style.zIndex = 650;
         map.getPane('labels').style.pointerEvents = 'none';
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+        const labelsLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
             attribution: '&copy; Esri', maxZoom: 16, pane: 'labels'
-        }).addTo(map);
+        });
+        labelsLayer.addTo(map);
 
         let fillOp = 0.85; 
         let borderOp = 1;
@@ -388,7 +389,7 @@
             "concordia",
             // São Paulo 
             "bragancapaulista", "guarulhos", "bauru", "fernandopolis", "presidenteprudente", 
-            "itapetininga", "doiscorregos", "leme", "saojosedoscampos", "descalvado", "saojosedoriopreto", "santabarbaradoeste"
+            "itapetininga", "doiscorregos", "leme", "saojosedoscampos", "descalvado", "saojosedoriopreto"
         ];
 
         const limeCities = ["ararica", "campobom", "capeladesantana", "doisirmaos", "estanciavelha", "harmonia", "igrejinha", "ivoti", "lindolfocollor", "montenegro", "morroreuter", "novahartz", "novohamburgo", "parecinovo", "parobe", "portao", "presidentelucena", "saojosedohortencio", "saoleopoldo", "saosebastiaodocai", "sapiranga", "taquara"];
@@ -407,13 +408,13 @@
         const fuchsiaCities = ["alvarodecarvalho", "bora", "camposnovospaulista", "duartina", "echapora", "galia", "garca", "getulina", "guaimbe", "guaranta", "herculandia", "juliomesquita", "lupercio", "lutecia", "marilia", "ocaucu", "oriente", "oscarbressane", "pompeia", "queiroz", "quintana", "saopedrodoturvo", "veracruz"];
         const emeraldCities = ["antonioolinto", "balsanova", "campodotenente", "lapa", "palmeira", "portoamazonas", "quitandinha", "rionegro", "saojoaodotriunfo", "saomateusdosul"];
         const jundiaiCities = ["campolimpopaulista", "itupeva", "jundiai", "louveira", "varzeapaulista"];
-        const americanaCities = ["americana", "cosmopolis", "novaodessa", "sumare", "hortolandia"];
+        const americanaCities = ["americana", "cosmopolis", "novaodessa", "sumare", "hortolandia", "santabarbaradoeste", "paulinia"];
         const piracicabaCities = ["iracemapolis", "limeira", "piracicaba", "rioclaro", "riodaspedras", "saltinho"];
         const indaiatubaCities = ["capivari", "eliasfausto", "indaiatuba", "itu", "montemor", "salto"];
         const indigoCities = ["angradosreis", "barradopirai", "barramansa", "itatiaia", "mangaratiba", "pinheiral", "pirai", "portoreal", "quatis", "resende", "valenca", "voltaredonda", "bananal", "cruzeiro"];
         const amberCities = ["toledo", "ouroverdedooeste", "saopedrodoiguacu", "bragantina", "tupassi", "marechalcandidorondon", "assischateaubriand", "veracruzdooeste", "patobragado", "entreriosdooeste", "palotina", "cascavel"];
 
-        const redCities = ["paranavai", "saojosedoriopreto", "telemacoborba", "arapoti", "bauru", "bragancapaulista", "caxiasdosul", "concordia", "descalvado", "doiscorregos", "farroupilha", "fernandopolis", "guarulhos", "ibipora", "itapetininga", "leme", "presidenteprudente", "santabarbaradoeste", "saojosedoscampos", "apucarana", "joinville"];
+        const redCities = ["paranavai", "saojosedoriopreto", "telemacoborba", "arapoti", "bauru", "bragancapaulista", "caxiasdosul", "concordia", "descalvado", "doiscorregos", "farroupilha", "fernandopolis", "guarulhos", "ibipora", "itapetininga", "leme", "presidenteprudente", "saojosedoscampos", "apucarana", "joinville"];
 
         function normalize(name) {
             if (!name) return "";
@@ -675,10 +676,13 @@
         map.on('baselayerchange', function(e) {
             if (e.name === "Mapa com Rodovias") {
                 fillOp = 0.25; borderOp = 0.5; isOportunidadeMode = false;
+                map.removeLayer(labelsLayer);
             } else if (e.name === "Oportunidades (Novas Lojas)") {
                 fillOp = 0.25; borderOp = 0.5; isOportunidadeMode = true;
+                map.removeLayer(labelsLayer);
             } else {
                 fillOp = 0.85; borderOp = 1; isOportunidadeMode = false;
+                map.addLayer(labelsLayer);
             }
             
             allLayersGroup.eachLayer(function(layer) {
@@ -712,7 +716,7 @@
             jundiai: { title: "Velot Jundiaí", cities: [ "--- SÃO PAULO (SP) ---", "Campo Limpo Paulista", "Itupeva", "Jundiaí", "Louveira", "Várzea Paulista" ] },
             indaiatuba: { title: "Velot Indaiatuba", cities: [ "--- SÃO PAULO (SP) ---", "Capivari", "Elias Fausto", "Indaiatuba", "Itu", "Monte Mor", "Salto" ] },
             piracicaba: { title: "Velot Piracicaba", cities: [ "--- SÃO PAULO (SP) ---", "Iracemápolis", "Limeira", "Piracicaba", "Rio Claro", "Rio das Pedras", "Saltinho" ] },
-            americana: { title: "Velot Americana", cities: [ "--- SÃO PAULO (SP) ---", "Americana", "Cosmópolis", "Hortolândia", "Nova Odessa", "Sumaré" ] },
+            americana: { title: "Velot Americana", cities: [ "--- SÃO PAULO (SP) ---", "Americana", "Cosmópolis", "Hortolândia", "Nova Odessa", "Paulínia", "Santa Bárbara d'Oeste", "Sumaré" ] },
             indigo: { title: "Velot Barra Mansa", cities: [ "--- RIO DE JANEIRO (RJ) ---", "Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Itatiaia", "Mangaratiba", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Valença", "Volta Redonda", "", "--- SÃO PAULO (SP) ---", "Bananal", "Cruzeiro" ] },
             amber: { title: "Velot Toledo", cities: [ "--- PARANÁ (PR) ---", "Assis Chateaubriand", "Bragantina", "Cascavel", "Entre Rios do Oeste", "Marechal Cândido Rondon", "Ouro Verde do Oeste", "Palotina", "Pato Bragado", "São Pedro do Iguaçu", "Toledo", "Tupãssi", "Vera Cruz do Oeste" ] },
             red: {
@@ -721,7 +725,7 @@
                     "--- RIO GRANDE DO SUL (RS) ---", "Caxias do Sul", "Farroupilha", "",
                     "--- SANTA CATARINA (SC) ---", "Concórdia", "Joinville", "",
                     "--- PARANÁ (PR) ---", "Apucarana", "Arapoti", "Ibiporã", "Paranavaí", "Telêmaco Borba", "",
-                    "--- SÃO PAULO (SP) ---", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José do Rio Preto", "São José dos Campos"
+                    "--- SÃO PAULO (SP) ---", "Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Presidente Prudente", "São José do Rio Preto", "São José dos Campos"
                 ]
             }
         };
@@ -819,9 +823,9 @@
                 { state: 'SP', group: 'Velot Indaiatuba', cities: ["Capivari", "Elias Fausto", "Indaiatuba", "Itu", "Monte Mor", "Salto"] },
                 { state: 'SP', group: 'Velot Jundiaí', cities: ["Campo Limpo Paulista", "Itupeva", "Jundiaí", "Louveira", "Várzea Paulista"] },
                 { state: 'SP', group: 'Velot Piracicaba', cities: ["Iracemápolis", "Limeira", "Piracicaba", "Rio Claro", "Rio das Pedras", "Saltinho"] },
-                { state: 'SP', group: 'Velot Americana', cities: ["Americana", "Cosmópolis", "Hortolândia", "Nova Odessa", "Sumaré"] },
+                { state: 'SP', group: 'Velot Americana', cities: ["Americana", "Cosmópolis", "Hortolândia", "Nova Odessa", "Paulínia", "Santa Bárbara d'Oeste", "Sumaré"] },
                 { state: 'SP', group: 'Velot Barra Mansa', cities: ["Bananal", "Cruzeiro"] },
-                { state: 'SP', group: 'Revendas sem anúncios V4', cities: ["Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Presidente Prudente", "Santa Bárbara d'Oeste", "São José do Rio Preto", "São José dos Campos"] },
+                { state: 'SP', group: 'Revendas sem anúncios V4', cities: ["Bauru", "Bragança Paulista", "Descalvado", "Dois Córregos", "Fernandópolis", "Guarulhos", "Itapetininga", "Leme", "Presidente Prudente", "São José do Rio Preto", "São José dos Campos"] },
                 // RJ
                 { state: 'RJ', group: 'Velot Barra Mansa', cities: ["Angra dos Reis", "Barra do Piraí", "Barra Mansa", "Itatiaia", "Mangaratiba", "Pinheiral", "Piraí", "Porto Real", "Quatis", "Resende", "Valença", "Volta Redonda"] }
             ];
